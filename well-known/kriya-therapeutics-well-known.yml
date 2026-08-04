@@ -1,0 +1,68 @@
+generated: '2026-08-04'
+method: probed
+source: live HTTP probes of https://kriyatherapeutics.com/.well-known/* on 2026-08-04
+host: https://kriyatherapeutics.com
+note: >-
+  Kriya Therapeutics publishes no /.well-known/ discovery surface. Every path below returned HTTP 404
+  rather than a document, so there are no false positives from an SPA catch-all — this deployment
+  returns a real 404 status. There is no security.txt (RFC 9116), no OpenID Connect or OAuth
+  authorization-server metadata, no RFC 9727 api-catalog, no ai-plugin.json, and no A2A agent card at
+  either the canonical /.well-known/agent-card.json or the legacy /.well-known/agent.json path. The
+  same seven paths were probed against the alias host kriyatx.com and the www. host with identical
+  404 results. Recorded absence is valid data: no a2a/ artifact is written, because an agent card may
+  only ever be harvested from the provider's own host, never authored on its behalf.
+documents:
+- path: /.well-known/security.txt
+  spec: RFC 9116
+  status: 404
+- path: /.well-known/openid-configuration
+  spec: OpenID Connect Discovery 1.0
+  status: 404
+- path: /.well-known/oauth-authorization-server
+  spec: RFC 8414
+  status: 404
+- path: /.well-known/api-catalog
+  spec: RFC 9727
+  status: 404
+- path: /.well-known/ai-plugin.json
+  spec: OpenAI plugin manifest
+  status: 404
+- path: /.well-known/agent-card.json
+  spec: A2A 1.0.0 Agent Card
+  status: 404
+- path: /.well-known/agent.json
+  spec: A2A pre-0.3 legacy Agent Card
+  status: 404
+alias_hosts_probed:
+- host: https://kriyatx.com
+  result: All seven /.well-known/ paths 404. Host 200-redirects to kriyatherapeutics.com.
+- host: https://www.kriyatherapeutics.com
+  result: All seven /.well-known/ paths 404.
+other_discovery:
+- path: /robots.txt
+  status: 200
+  note: >-
+    Yoast-generated block. Sets Crawl-delay 10 and `Disallow:` (empty — nothing disallowed); declares
+    Sitemap https://kriyatherapeutics.com/sitemap_index.xml. No AI or agent user-agent directives,
+    so no agent-specific crawl policy is expressed either way.
+- path: /sitemap.xml
+  status: 200
+  note: Yoast sitemap index redirecting from /sitemap.xml, listing post-sitemap.xml, page-sitemap.xml and news-sitemap.xml.
+- path: /llms.txt
+  status: 404
+  note: Not published. An API Evangelist-generated llms.txt is carried in llms/ and is clearly marked as not provider-published.
+- path: /feed/
+  status: 200
+  content_type: application/rss+xml
+  note: RSS 2.0 channel for the core posts collection.
+- path: /newsroom/feed/
+  status: 200
+  note: Feed for the newsroom page.
+- path: /wp-json/
+  status: 200
+  content_type: application/json
+  note: >-
+    The WordPress REST API index — the one machine-readable discovery document this provider does
+    publish. Advertises 227 routes across 11 namespaces. Its `authentication` block is an EMPTY array
+    on this deployment (unlike many WordPress sites, application passwords are not advertised).
+    Modelled in openapi/kriya-therapeutics-content-openapi.yml.

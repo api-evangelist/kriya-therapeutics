@@ -1,0 +1,203 @@
+generated: '2026-08-04'
+method: derived
+source: openapi/kriya-therapeutics-content-openapi.yml + live responses from https://kriyatherapeutics.com/wp-json/
+note: >-
+  Entity-relationship graph for the Kriya Therapeutics Content API, derived from the OpenAPI
+  component schemas, the id-reference fields on each resource, and the `_links` relations observed on
+  live responses. Ids are bare integers — this API uses no prefixed or typed identifiers, and post,
+  page, news, form and attachment ids share a single sequence because WordPress stores them all in
+  one table, so an id alone does not identify its type. The two custom post types (`news`, `team`)
+  are what make this deployment different from a stock WordPress corporate site.
+identifiers:
+  scheme: integer
+  shared_sequence: true
+  detail: >-
+    post, page, news, gutena_forms and attachment ids are drawn from one sequence. Observed values:
+    pages 3-1764, news up to 1906, posts up to 1885, media up to 1898, forms 1869. Term ids
+    (categories, teamkeywords) are a separate sequence (1-23).
+entities:
+- name: NewsItem
+  rest_base: news
+  post_type: news
+  operations: [listNews, getNewsItem]
+  population: 28
+  hierarchical: true
+  taxonomy: newscategories
+  description: >-
+    The press-release archive, and the highest-value collection on this API. 28 dated items running
+    from the $80M Series A announcement (2020-05-12) to selection for the FDA PreCheck Pilot Program
+    (2026-06-29), covering every financing round (Series A/B/C/C-extension/D), acquisition (Redpin
+    Therapeutics 2022, Tramontane Therapeutics 2023), licensing deal (Everads 2023), executive
+    appointment and scientific presentation (ASGCT, ARVO, J.P. Morgan). Bodies are clean Gutenberg
+    block HTML — usable prose, not builder markup.
+- name: Post
+  rest_base: posts
+  post_type: post
+  operations: [listPosts, getPost]
+  population: 33
+  taxonomy: category
+  description: >-
+    The core post collection. Categorised with `category` terms that on this deployment encode
+    PEOPLE groupings rather than topics — `leadership` (17), `bod` (10), `sab` (6) — so these
+    records back the Team page rather than a blog.
+- name: Page
+  rest_base: pages
+  post_type: page
+  operations: [listPages, getPage]
+  population: 18
+  hierarchical: true
+  description: >-
+    The corporate and scientific narrative: Home (11), Pipeline (23), Ophthalmology (1265),
+    Neurology (1282), Metabolic Disease (1290), Product Design (1627), Research & Development (1628),
+    Platform/manufacturing (1614), Team (1481), News/newsroom (1555), Careers (955), Connect (15),
+    Site Map (1634), Privacy Policy (3), Terms of Use (733), Data Privacy Terms (1727), Data Notice
+    (1743) and a `styles` utility page (1764).
+- name: TeamMember
+  rest_base: team
+  post_type: team
+  operations: [listTeam]
+  population: 0
+  taxonomy: teamkeywords
+  description: >-
+    Registered custom post type with its own taxonomy, but empty (X-WP-Total 0). Leadership, board
+    and advisor records live as core `post` records categorised into bod/leadership/sab instead. The
+    empty type is a migration artefact, not a data source.
+- name: MediaItem
+  rest_base: media
+  post_type: attachment
+  operations: [listMedia, getMediaItem]
+  population: 304
+  description: >-
+    The media library — logos, pipeline graphics, leadership headshots and press-release imagery.
+    Each item carries source_url, mime_type, alt_text, filesize and a media_details object listing
+    every generated size. The largest addressable collection on the API.
+- name: Term
+  rest_base: categories, tags, newscategories, teamkeywords
+  operations: [listCategories, getCategory, listTags, listNewsCategories, listTeamKeywords, getTeamKeyword]
+  description: >-
+    Taxonomy terms across four taxonomies. `category` has 7 terms of which 3 are populated
+    (leadership 17, bod 10, sab 6). `teamkeywords` has 4 terms — Leadership, Board of Directors,
+    Founders, Scientific and Strategic Advisors — each with a public /keyword/<slug>/ archive but
+    count 0. `post_tag` and `newscategories` are registered with zero terms.
+- name: Form
+  rest_base: gutena_forms
+  post_type: gutena_forms
+  operations: [listForms]
+  population: 1
+  description: >-
+    The Gutena Forms block definition backing the Connect page contact form. The definition is
+    readable; submitted ENTRIES are gated behind gutena-forms/v1 (401) and are not exposed.
+- name: User
+  rest_base: users
+  operations: []
+  gated: true
+  description: >-
+    Author records. Referenced by the `author` integer on every content record but NOT readable —
+    /wp/v2/users returns 401 rest_user_cannot_view anonymously on this deployment, so the author
+    edge dead-ends. Listed here only so the dangling reference is explained rather than silently
+    dropped.
+- name: PostType
+  rest_base: types
+  operations: [listTypes, getType]
+  description: >-
+    Registry of registered post types — post, page, attachment, nav_menu_item, wp_block,
+    wp_template, wp_template_part, wp_global_styles, wp_navigation, wp_font_family, wp_font_face,
+    gutena_forms, team, news. The two custom types are the discovery hook for this provider's
+    real content.
+- name: Taxonomy
+  rest_base: taxonomies
+  operations: [listTaxonomies, getTaxonomy]
+  description: Registry of registered taxonomies — category, post_tag, nav_menu, wp_pattern_category, teamkeywords, newscategories.
+- name: SearchResult
+  rest_base: search
+  operations: [searchContent]
+  description: A projection, not a stored entity — {id, title, url, type, subtype} pointing back at a NewsItem, Post or Page. 58 objects indexed.
+relationships:
+- from: NewsItem
+  to: Term
+  kind: has_many
+  via: newscategories
+  resolves_with: listNewsCategories
+  note: Declared on every news item, but the taxonomy has zero terms — the array is always empty.
+- from: NewsItem
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+  resolves_with: getMediaItem
+- from: NewsItem
+  to: NewsItem
+  kind: belongs_to
+  via: parent
+  resolves_with: getNewsItem
+  note: The news type is hierarchical; observed items all have parent 0 (no nesting in use).
+- from: NewsItem
+  to: User
+  kind: belongs_to
+  via: author
+  resolves_with: null
+  note: UNRESOLVABLE — /wp/v2/users returns 401 rest_user_cannot_view on this deployment. Treat `author` as an opaque integer.
+- from: Post
+  to: Term
+  kind: has_many
+  via: categories
+  resolves_with: getCategory
+  note: The one populated relationship in the taxonomy graph — bod/leadership/sab group the people records.
+- from: Post
+  to: Term
+  kind: has_many
+  via: tags
+  resolves_with: null
+  note: post_tag has zero terms; the array is always empty.
+- from: Post
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+  resolves_with: getMediaItem
+- from: Page
+  to: Page
+  kind: belongs_to
+  via: parent
+  resolves_with: getPage
+  note: Pages are hierarchical; the pipeline sub-pages (Ophthalmology, Neurology, Metabolic Disease) sit under Pipeline in the site nav.
+- from: Page
+  to: MediaItem
+  kind: has_one
+  via: featured_media
+  resolves_with: getMediaItem
+- from: TeamMember
+  to: Term
+  kind: has_many
+  via: teamkeywords
+  resolves_with: getTeamKeyword
+  note: Modelled because both sides are registered, but the collection is empty.
+- from: MediaItem
+  to: Page
+  kind: belongs_to
+  via: post
+  resolves_with: getPage
+  note: Nullable — many attachments are unattached.
+- from: Term
+  to: Term
+  kind: belongs_to
+  via: parent
+  resolves_with: getCategory
+  note: category and newscategories are hierarchical; teamkeywords and post_tag are flat.
+- from: PostType
+  to: Taxonomy
+  kind: has_many
+  via: taxonomies
+  resolves_with: getTaxonomy
+  note: 'news -> newscategories; team -> teamkeywords; post -> category, post_tag.'
+- from: SearchResult
+  to: NewsItem
+  kind: belongs_to
+  via: id
+  resolves_with: getNewsItem
+  note: subtype=news indicates the target collection; subtype=page -> getPage, subtype=post -> getPost.
+traversal:
+  mechanism: _links
+  description: >-
+    Every resource carries a `_links` object with self, collection, about, author, wp:attachment,
+    wp:term and curies relations, so the graph above is walkable at runtime without hard-coding
+    routes. Passing `_embed` inlines the featured media and terms under `_embedded` — but not the
+    author, which is gated on this deployment.

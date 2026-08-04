@@ -1,0 +1,57 @@
+generated: '2026-08-04'
+method: derived
+source: openapi/kriya-therapeutics-content-openapi.yml + live probes of https://kriyatherapeutics.com on 2026-08-04
+note: >-
+  Lifecycle posture for the Kriya Therapeutics Content API. Kriya Therapeutics publishes no
+  versioning policy, no deprecation policy, no SLA, no status page and no API changelog, because it
+  runs no developer program — the surface catalogued here is the site's own CMS content API. Absence
+  is recorded as absence. No StatusPage and no Deprecation pointers are emitted in apis.yml, because
+  neither thing exists; emitting them would credit the provider with operational transparency it does
+  not publish.
+versioning:
+  scheme: uri-path namespace
+  current: wp/v2
+  provider_policy: null
+  docs: null
+  note: >-
+    The version namespace is set by WordPress core, not by Kriya Therapeutics. The site's REST index
+    lists every registered namespace — oembed/1.0, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1,
+    cookie-notice/v1, gutena-forms/v1, wordfence/v1, yoast/v1, wp/v2, wp-site-health/v1,
+    wp-block-editor/v1, wp-abilities/v1 — so a consumer can detect namespace changes by polling
+    /wp-json/. The plugin namespaces in particular are volatile: they appear and disappear with the
+    site's plugin roster, entirely outside any announcement. The platform version, and therefore the
+    contract, moves on WordPress core's release train.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: No Sunset (RFC 8594) or Deprecation header was observed on any response, and no deprecation policy is published.
+deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+status_page: null
+status_page_note: status.kriyatherapeutics.com does not resolve (NXDOMAIN), and no status page is linked from any site page.
+changelog:
+  url: null
+  api_changelog: false
+  note: >-
+    No API changelog. The company does, however, publish a genuinely machine-trackable CORPORATE
+    news archive: the `news` custom post type carries 28 dated press releases from 2020-05-12 to
+    2026-06-29, individually addressable and filterable with after/before/modified_after. That is a
+    company changelog in effect, not an API one — see skills/kriya-therapeutics-track-news-archive.md.
+support:
+  channel: https://kriyatherapeutics.com/connect/
+  phone: '+1-833-574-9289'
+  note: >-
+    General corporate contact page (Gutena form, id 1869) plus a phone number and a Durham, NC
+    mailing address. No developer support channel, no forum, no ticketing.
+observed_freshness:
+  news_items: 28
+  most_recent_news: '2026-06-29T14:11:52'
+  oldest_news: '2025-09-10 (page 1 of the collection; archive extends to 2020-05-12)'
+  posts_published: 33
+  pages_published: 18
+  media_items: 304
+  most_recent_media_observed: '2026-05-29T11:58:39'
+  sitemap_lastmod: '2026-07-09T19:25:11 (page-sitemap.xml)'

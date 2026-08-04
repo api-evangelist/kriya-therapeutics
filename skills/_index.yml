@@ -1,0 +1,41 @@
+generated: '2026-08-04'
+method: generated
+source: openapi/kriya-therapeutics-content-openapi.yml
+note: >-
+  Kriya Therapeutics publishes no AGENTS.md and no skill files of its own — these are API Evangelist
+  packaged operating instructions for the one machine-readable surface it does expose, the anonymous
+  WordPress REST content API behind kriyatherapeutics.com. Every operationId referenced below exists
+  verbatim in the OpenAPI in this repo. There is no product API, so there are no product flows to
+  package; the skills cover tracking the press-release archive, reading the scientific and pipeline
+  content, and harvesting the media library — together with the four traps a naive consumer falls
+  into on this site: an nginx HTML 404 where a JSON error is expected, an empty `team` collection
+  whose data actually lives in `posts`, a taxonomy that encodes people rather than topics, and a
+  gated `users` endpoint that dead-ends every author reference.
+api: kriya-therapeutics:kriya-therapeutics-content-api
+skills:
+- file: kriya-therapeutics-track-news-archive.md
+  name: Track the Kriya Therapeutics press-release archive
+  description: >-
+    Page, filter and incrementally harvest the 28-item `news` custom post type — the company's full
+    financing, acquisition, licensing, appointment and scientific-presentation history from May 2020
+    to June 2026 — and parse the Gutenberg block HTML in each body.
+  api: openapi/kriya-therapeutics-content-openapi.yml
+  operations: [listNews, getNewsItem, listNewsCategories, listTypes]
+- file: kriya-therapeutics-read-pipeline-content.md
+  name: Read Kriya Therapeutics pipeline and platform content
+  description: >-
+    Retrieve the 18 published pages — Pipeline and its three therapeutic-area children, Product
+    Design, Research & Development, Platform/manufacturing, Team, Careers, Connect and the legal
+    pages — plus the people records that back the Team page, which live in `posts` categorised into
+    leadership/bod/sab rather than in the empty `team` collection.
+  api: openapi/kriya-therapeutics-content-openapi.yml
+  operations: [listPages, getPage, listPosts, getPost, listCategories, listTeam, listTypes]
+- file: kriya-therapeutics-search-and-harvest-media.md
+  name: Search Kriya Therapeutics content and harvest the media library
+  description: >-
+    Use cross-content search to find material by term (AAV, geographic atrophy, KRIYA-586, FGF21,
+    Series D, PreCheck), route on the result `subtype` to the right resolver, and page through the
+    304-item media library for logos, pipeline graphics and press imagery with an incremental
+    modified_after harvest.
+  api: openapi/kriya-therapeutics-content-openapi.yml
+  operations: [searchContent, getNewsItem, getPage, listMedia, getMediaItem]

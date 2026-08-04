@@ -1,0 +1,1171 @@
+openapi: 3.1.0
+info:
+  title: Kriya Therapeutics Content API
+  version: wp/v2
+  summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
+  description: >-
+    The read-only content surface Kriya Therapeutics exposes at
+    https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical
+    company developing one-time AAV gene therapies for chronic diseases across ophthalmology,
+    metabolic disease and neurology; it runs no developer program and markets no product API. This
+    document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes
+    at /wp-json/, restricted to the operations that were verified to return data anonymously on
+    2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins,
+    /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1,
+    wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all
+    require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  contact:
+    name: Kriya Therapeutics
+    url: https://kriyatherapeutics.com/connect/
+  x-api-evangelist-provenance: >-
+    Derived by the API Evangelist enrichment pipeline from the live WordPress REST route index at
+    https://kriyatherapeutics.com/wp-json/ (227 routes across the namespaces oembed/1.0,
+    wpe/cache-plugin/v1, wpe_sign_on_plugin/v1, cookie-notice/v1, gutena-forms/v1, wordfence/v1,
+    yoast/v1, wp/v2, wp-site-health/v1, wp-block-editor/v1, wp-abilities/v1) and verified against
+    live anonymous responses on 2026-08-04. Every parameter below appears verbatim in the route
+    index `args` for that endpoint, read from an OPTIONS request against the collection. Observed
+    collection sizes on the harvest date: posts 33, pages 18, news 28, media 304, categories 7,
+    teamkeywords 4, gutena_forms 1, search 58; team 0, newscategories 0, tags 0, comments 0. Kriya
+    Therapeutics publishes no OpenAPI, no developer documentation and no API reference for this
+    surface; the humanURL in apis.yml points at the upstream WordPress REST handbook that defines
+    the wp/v2 contract. Nothing here was obtained with credentials.
+servers:
+  - url: https://kriyatherapeutics.com/wp-json
+    description: Production content API
+tags:
+  - name: news
+    description: The `news` custom post type — the company press-release archive (28 items at harvest, back to May 2020).
+  - name: posts
+    description: Core blog/post collection (33 items at harvest).
+  - name: pages
+    description: Corporate and pipeline pages (18 published at harvest time).
+  - name: team
+    description: The `team` custom post type. Registered and reachable, but empty (X-WP-Total 0) — the Team page is authored as page markup.
+  - name: media
+    description: Media library (304 attachments at harvest time).
+  - name: taxonomy
+    description: Categories, tags, news categories and team keywords.
+  - name: forms
+    description: The `gutena_forms` custom post type used for the site contact form.
+  - name: search
+    description: Cross-content search across published objects.
+  - name: discovery
+    description: Route, type, taxonomy and status discovery documents.
+  - name: oembed
+    description: oEmbed 1.0 provider endpoint for kriyatherapeutics.com URLs.
+paths:
+  /:
+    get:
+      tags: [discovery]
+      operationId: getApiIndex
+      summary: Get the REST API index
+      description: >-
+        Returns the site index — name, description, URL, home, GMT offset, timezone, the registered
+        namespaces, the site logo attachment id, the authentication methods, and the full route
+        table (227 routes on this deployment).
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - name: namespace
+          in: query
+          description: Restrict the response to a single namespace.
+          schema:
+            type: string
+            examples: ['wp/v2']
+      responses:
+        '200':
+          description: Site index
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiIndex'
+  /wp/v2/news:
+    get:
+      tags: [news]
+      operationId: listNews
+      summary: List news items
+      description: >-
+        Lists published items of the `news` custom post type — Kriya Therapeutics' press-release
+        archive. This is the richest collection on the deployment (28 items at harvest, from the
+        May 2020 Series A announcement to the June 2026 FDA PreCheck Pilot Program selection) and
+        the only place the archive is individually addressable and date-filterable.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - $ref: '#/components/parameters/ModifiedAfter'
+        - $ref: '#/components/parameters/ModifiedBefore'
+        - $ref: '#/components/parameters/Exclude'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/SearchColumns'
+        - $ref: '#/components/parameters/Parent'
+        - $ref: '#/components/parameters/ParentExclude'
+        - name: newscategories
+          in: query
+          description: Limit result set to items with specific `newscategories` terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: newscategories_exclude
+          in: query
+          description: Limit result set to items except those with specific `newscategories` terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: tax_relation
+          in: query
+          description: Limit result set based on relationship between multiple taxonomies.
+          schema:
+            type: string
+            enum: [AND, OR]
+      responses:
+        '200':
+          description: A page of news items.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+            Link:
+              $ref: '#/components/headers/LinkPagination'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsItem'
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+  /wp/v2/news/{id}:
+    get:
+      tags: [news]
+      operationId: getNewsItem
+      summary: Get a news item
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single news item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/posts:
+    get:
+      tags: [posts]
+      operationId: listPosts
+      summary: List posts
+      description: Lists published core posts (33 at harvest). Categorised with the `category` taxonomy.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - $ref: '#/components/parameters/ModifiedAfter'
+        - $ref: '#/components/parameters/ModifiedBefore'
+        - $ref: '#/components/parameters/Exclude'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/SearchColumns'
+        - name: author
+          in: query
+          description: Limit result set to posts assigned to specific authors.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: author_exclude
+          in: query
+          description: Ensure result set excludes posts assigned to specific authors.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: categories
+          in: query
+          description: Limit result set to items with specific category terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: categories_exclude
+          in: query
+          description: Limit result set to items except those with specific category terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: tags
+          in: query
+          description: Limit result set to items with specific post_tag terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: tags_exclude
+          in: query
+          description: Limit result set to items except those with specific post_tag terms.
+          schema:
+            type: array
+            items: { type: integer }
+        - name: sticky
+          in: query
+          description: Limit result set to items that are sticky.
+          schema: { type: boolean }
+        - name: format
+          in: query
+          description: Limit result set to items assigned one or more given formats.
+          schema:
+            type: array
+            items: { type: string }
+      responses:
+        '200':
+          description: A page of posts.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+            Link:
+              $ref: '#/components/headers/LinkPagination'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+  /wp/v2/posts/{id}:
+    get:
+      tags: [posts]
+      operationId: getPost
+      summary: Get a post
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/pages:
+    get:
+      tags: [pages]
+      operationId: listPages
+      summary: List pages
+      description: >-
+        Lists published pages (18 at harvest) — the corporate and pipeline surface: Home, Pipeline,
+        Ophthalmology, Metabolic Disease, Neurology, Product Design, Research & Development,
+        Platform (slug `manufacturing`), Team, News (slug `newsroom`), Careers, Connect, Site Map,
+        Privacy Policy, Terms of Use, Data Privacy Terms, Data Notice and a `styles` utility page.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - $ref: '#/components/parameters/ModifiedAfter'
+        - $ref: '#/components/parameters/ModifiedBefore'
+        - $ref: '#/components/parameters/Exclude'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/Parent'
+        - $ref: '#/components/parameters/ParentExclude'
+        - name: menu_order
+          in: query
+          description: Limit result set to posts with a specific menu_order value.
+          schema: { type: integer }
+      responses:
+        '200':
+          description: A page of pages.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+            Link:
+              $ref: '#/components/headers/LinkPagination'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Page'
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+  /wp/v2/pages/{id}:
+    get:
+      tags: [pages]
+      operationId: getPage
+      summary: Get a page
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Page'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/team:
+    get:
+      tags: [team]
+      operationId: listTeam
+      summary: List team items
+      description: >-
+        Lists published items of the `team` custom post type. This deployment returns an empty array
+        (X-WP-Total 0) — the Team page is authored as page markup rather than as team records, even
+        though the post type and its `teamkeywords` taxonomy are registered.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/Slug'
+        - name: teamkeywords
+          in: query
+          description: Limit result set to items with specific `teamkeywords` terms.
+          schema:
+            type: array
+            items: { type: integer }
+      responses:
+        '200':
+          description: A page of team items (empty on this deployment).
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /wp/v2/media:
+    get:
+      tags: [media]
+      operationId: listMedia
+      summary: List media
+      description: >-
+        Lists media library attachments (304 at harvest) — the logos, pipeline graphics, leadership
+        headshots and press-release imagery used across the site. Each item carries `source_url`,
+        `media_details` with every generated size, `mime_type`, `alt_text` and `filesize`.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/After'
+        - $ref: '#/components/parameters/Before'
+        - $ref: '#/components/parameters/Exclude'
+        - $ref: '#/components/parameters/Include'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/OrderBy'
+        - $ref: '#/components/parameters/Slug'
+        - name: media_type
+          in: query
+          description: Limit result set to attachments of a particular media type.
+          schema:
+            type: string
+            enum: [image, video, text, application, audio]
+        - name: mime_type
+          in: query
+          description: Limit result set to attachments of a particular MIME type.
+          schema: { type: string }
+      responses:
+        '200':
+          description: A page of media items.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+            Link:
+              $ref: '#/components/headers/LinkPagination'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaItem'
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+  /wp/v2/media/{id}:
+    get:
+      tags: [media]
+      operationId: getMediaItem
+      summary: Get a media item
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single media item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/categories:
+    get:
+      tags: [taxonomy]
+      operationId: listCategories
+      summary: List categories
+      description: >-
+        Lists `category` terms (7 at harvest). Populated terms on this deployment are `leadership`
+        (17), `bod` (10) and `sab` (6) — the taxonomy carries the leadership, board and scientific
+        advisory board groupings used on the Team page.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Order'
+        - $ref: '#/components/parameters/Slug'
+        - name: hide_empty
+          in: query
+          description: Whether to hide terms not assigned to any posts.
+          schema: { type: boolean }
+        - name: post
+          in: query
+          description: Limit result set to terms assigned to a specific post.
+          schema: { type: integer }
+      responses:
+        '200':
+          description: A page of category terms.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+  /wp/v2/categories/{id}:
+    get:
+      tags: [taxonomy]
+      operationId: getCategory
+      summary: Get a category term
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single category term.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Term'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/tags:
+    get:
+      tags: [taxonomy]
+      operationId: listTags
+      summary: List tags
+      description: Lists `post_tag` terms. Registered by WordPress core; this deployment returns an empty array.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: A page of tag terms (empty on this deployment).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+  /wp/v2/newscategories:
+    get:
+      tags: [taxonomy]
+      operationId: listNewsCategories
+      summary: List news category terms
+      description: >-
+        Lists terms of the `newscategories` taxonomy attached to the `news` post type. Registered
+        and reachable, but this deployment returns an empty array — news items are not categorised.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: A page of news category terms (empty on this deployment).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+  /wp/v2/teamkeywords:
+    get:
+      tags: [taxonomy]
+      operationId: listTeamKeywords
+      summary: List team keyword terms
+      description: >-
+        Lists terms of the `teamkeywords` taxonomy attached to the `team` post type. Four terms are
+        registered — Leadership, Board of Directors, Founders, and Scientific and Strategic Advisors
+        — each with a public archive link under /keyword/<slug>/, though all report count 0.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: A page of team keyword terms.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+  /wp/v2/teamkeywords/{id}:
+    get:
+      tags: [taxonomy]
+      operationId: getTeamKeyword
+      summary: Get a team keyword term
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single team keyword term.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Term'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /wp/v2/comments:
+    get:
+      tags: [discovery]
+      operationId: listComments
+      summary: List comments
+      description: >-
+        Lists approved comments. Reachable anonymously and returns an empty array on this
+        deployment — the site publishes no comment surface.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: A page of comments (empty on this deployment).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /wp/v2/gutena_forms:
+    get:
+      tags: [forms]
+      operationId: listForms
+      summary: List published form definitions
+      description: >-
+        Lists items of the `gutena_forms` custom post type — the block-editor form definitions used
+        on the site. One item is published (the Contact Form). The form *entries* endpoints under
+        the gutena-forms/v1 namespace are credential-gated (401) and are not modelled.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: A page of form definitions.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /wp/v2/search:
+    get:
+      tags: [search]
+      operationId: searchContent
+      summary: Search published content
+      description: >-
+        Cross-content search over published objects (58 indexed on this deployment). Returns a
+        lightweight result shape — id, title, url, type, subtype — rather than full objects; follow
+        the `self` link in `_links` to retrieve the full record.
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+        - name: search
+          in: query
+          required: true
+          description: Limit results to those matching a string.
+          schema: { type: string }
+        - name: type
+          in: query
+          description: Limit results to items of an object type.
+          schema:
+            type: string
+            enum: [post, term, post-format]
+        - name: subtype
+          in: query
+          description: Limit results to items of one or more object subtypes (e.g. post, page, news).
+          schema:
+            type: array
+            items: { type: string }
+        - $ref: '#/components/parameters/Exclude'
+        - $ref: '#/components/parameters/Include'
+      responses:
+        '200':
+          description: A page of search results.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
+  /wp/v2/types:
+    get:
+      tags: [discovery]
+      operationId: listTypes
+      summary: List registered post types
+      description: >-
+        Returns every registered post type keyed by slug, including the two custom types that carry
+        this company's content — `news` (rest_base `news`, taxonomy `newscategories`) and `team`
+        (rest_base `team`, taxonomy `teamkeywords`).
+      parameters:
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: Registered post types.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/PostType'
+  /wp/v2/types/{type}:
+    get:
+      tags: [discovery]
+      operationId: getType
+      summary: Get a registered post type
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema: { type: string }
+          examples: { news: { value: news } }
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single post type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostType'
+  /wp/v2/taxonomies:
+    get:
+      tags: [discovery]
+      operationId: listTaxonomies
+      summary: List registered taxonomies
+      parameters:
+        - $ref: '#/components/parameters/Context'
+        - name: type
+          in: query
+          description: Limit results to taxonomies associated with a specific post type.
+          schema: { type: string }
+      responses:
+        '200':
+          description: Registered taxonomies.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Taxonomy'
+  /wp/v2/taxonomies/{taxonomy}:
+    get:
+      tags: [discovery]
+      operationId: getTaxonomy
+      summary: Get a registered taxonomy
+      parameters:
+        - name: taxonomy
+          in: path
+          required: true
+          schema: { type: string }
+          examples: { newscategories: { value: newscategories } }
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single taxonomy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Taxonomy'
+  /wp/v2/statuses:
+    get:
+      tags: [discovery]
+      operationId: listStatuses
+      summary: List post statuses
+      parameters:
+        - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: Registered statuses visible to the caller.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /oembed/1.0/embed:
+    get:
+      tags: [oembed]
+      operationId: getOembed
+      summary: Get an oEmbed response for a kriyatherapeutics.com URL
+      description: >-
+        oEmbed 1.0 provider endpoint. Verified live for https://kriyatherapeutics.com/ — returns
+        provider_name "Kriya Therapeutics", provider_url, title, type and the embed HTML.
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The URL of the resource to embed. Must be a kriyatherapeutics.com URL.
+          schema:
+            type: string
+            format: uri
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, xml]
+            default: json
+        - name: maxwidth
+          in: query
+          schema: { type: integer, default: 600 }
+        - name: maxheight
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: oEmbed 1.0 response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OembedResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  headers:
+    XWPTotal:
+      description: Total number of items in the unpaginated collection.
+      schema: { type: integer }
+    XWPTotalPages:
+      description: Total number of pages available at the requested per_page.
+      schema: { type: integer }
+    LinkPagination:
+      description: RFC 8288 Link header carrying rel="next" and rel="prev" pagination links.
+      schema: { type: string }
+  parameters:
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum: [view, embed, edit]
+        default: view
+    Page:
+      name: page
+      in: query
+      description: Current page of the collection.
+      schema: { type: integer, default: 1, minimum: 1 }
+    PerPage:
+      name: per_page
+      in: query
+      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
+      schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+    Search:
+      name: search
+      in: query
+      description: Limit results to those matching a string.
+      schema: { type: string }
+    SearchColumns:
+      name: search_columns
+      in: query
+      description: Array of column names to be searched.
+      schema:
+        type: array
+        items: { type: string }
+    After:
+      name: after
+      in: query
+      description: Limit response to posts published after a given ISO8601 compliant date.
+      schema: { type: string, format: date-time }
+    Before:
+      name: before
+      in: query
+      description: Limit response to posts published before a given ISO8601 compliant date.
+      schema: { type: string, format: date-time }
+    ModifiedAfter:
+      name: modified_after
+      in: query
+      description: Limit response to posts modified after a given ISO8601 compliant date.
+      schema: { type: string, format: date-time }
+    ModifiedBefore:
+      name: modified_before
+      in: query
+      description: Limit response to posts modified before a given ISO8601 compliant date.
+      schema: { type: string, format: date-time }
+    Exclude:
+      name: exclude
+      in: query
+      description: Ensure result set excludes specific IDs.
+      schema:
+        type: array
+        items: { type: integer }
+    Include:
+      name: include
+      in: query
+      description: Limit result set to specific IDs.
+      schema:
+        type: array
+        items: { type: integer }
+    Offset:
+      name: offset
+      in: query
+      description: Offset the result set by a specific number of items.
+      schema: { type: integer }
+    Order:
+      name: order
+      in: query
+      description: Order sort attribute ascending or descending.
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+    OrderBy:
+      name: orderby
+      in: query
+      description: Sort collection by object attribute.
+      schema:
+        type: string
+        examples: [date, id, title, slug, modified, relevance]
+    Slug:
+      name: slug
+      in: query
+      description: Limit result set to items with one or more specific slugs.
+      schema:
+        type: array
+        items: { type: string }
+    Parent:
+      name: parent
+      in: query
+      description: Limit result set to items with particular parent IDs.
+      schema:
+        type: array
+        items: { type: integer }
+    ParentExclude:
+      name: parent_exclude
+      in: query
+      description: Limit result set to all items except those of a particular parent ID.
+      schema:
+        type: array
+        items: { type: integer }
+    PathId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the object.
+      schema: { type: integer }
+  responses:
+    InvalidParam:
+      description: >-
+        A query parameter failed validation. WordPress returns its own JSON envelope
+        {code,message,data} with application/json — not RFC 9457 application/problem+json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+          examples:
+            per_page:
+              value:
+                code: rest_invalid_param
+                message: 'Invalid parameter(s): per_page'
+                data:
+                  status: 400
+                  params:
+                    per_page: per_page must be between 1 (inclusive) and 100 (inclusive)
+    NotFound:
+      description: >-
+        The object was not found. Note that on this deployment an unknown numeric id is answered by
+        the edge with an nginx HTML 404 page rather than the WordPress rest_post_invalid_id JSON
+        envelope — see errors/kriya-therapeutics-problem-types.yml.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+        text/html:
+          schema: { type: string }
+  schemas:
+    WPError:
+      type: object
+      description: The WordPress REST error envelope. Not RFC 9457.
+      properties:
+        code: { type: string }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            status: { type: integer }
+            params: { type: object, additionalProperties: { type: string } }
+      required: [code, message, data]
+    RenderedText:
+      type: object
+      properties:
+        rendered: { type: string }
+    Links:
+      type: object
+      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
+      additionalProperties: true
+    Post:
+      type: object
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date-time }
+        date_gmt: { type: string, format: date-time }
+        guid: { $ref: '#/components/schemas/RenderedText' }
+        modified: { type: string, format: date-time }
+        modified_gmt: { type: string, format: date-time }
+        slug: { type: string }
+        status: { type: string }
+        type: { type: string }
+        link: { type: string, format: uri }
+        title: { $ref: '#/components/schemas/RenderedText' }
+        content: { $ref: '#/components/schemas/RenderedText' }
+        excerpt: { $ref: '#/components/schemas/RenderedText' }
+        author: { type: integer }
+        featured_media: { type: integer }
+        comment_status: { type: string }
+        ping_status: { type: string }
+        sticky: { type: boolean }
+        template: { type: string }
+        format: { type: string }
+        categories:
+          type: array
+          items: { type: integer }
+        tags:
+          type: array
+          items: { type: integer }
+        class_list:
+          type: array
+          items: { type: string }
+        acf:
+          description: Advanced Custom Fields payload exposed on this deployment.
+          type: [object, array]
+        _links: { $ref: '#/components/schemas/Links' }
+    NewsItem:
+      type: object
+      description: >-
+        An item of the `news` custom post type. Hierarchical (carries `parent`), taxonomised with
+        `newscategories`, and without the comment/ping/sticky/format fields of a core post.
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date-time }
+        date_gmt: { type: string, format: date-time }
+        guid: { $ref: '#/components/schemas/RenderedText' }
+        modified: { type: string, format: date-time }
+        modified_gmt: { type: string, format: date-time }
+        slug: { type: string }
+        status: { type: string }
+        type: { type: string, const: news }
+        link: { type: string, format: uri }
+        title: { $ref: '#/components/schemas/RenderedText' }
+        content: { $ref: '#/components/schemas/RenderedText' }
+        excerpt: { $ref: '#/components/schemas/RenderedText' }
+        author: { type: integer }
+        featured_media: { type: integer }
+        parent: { type: integer }
+        template: { type: string }
+        newscategories:
+          type: array
+          items: { type: integer }
+        class_list:
+          type: array
+          items: { type: string }
+        acf:
+          type: [object, array]
+        _links: { $ref: '#/components/schemas/Links' }
+    Page:
+      type: object
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date-time }
+        date_gmt: { type: string, format: date-time }
+        guid: { $ref: '#/components/schemas/RenderedText' }
+        modified: { type: string, format: date-time }
+        slug: { type: string }
+        status: { type: string }
+        type: { type: string, const: page }
+        link: { type: string, format: uri }
+        title: { $ref: '#/components/schemas/RenderedText' }
+        content: { $ref: '#/components/schemas/RenderedText' }
+        excerpt: { $ref: '#/components/schemas/RenderedText' }
+        author: { type: integer }
+        featured_media: { type: integer }
+        parent: { type: integer }
+        menu_order: { type: integer }
+        template: { type: string }
+        acf:
+          type: [object, array]
+        _links: { $ref: '#/components/schemas/Links' }
+    MediaItem:
+      type: object
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date-time }
+        slug: { type: string }
+        type: { type: string, const: attachment }
+        link: { type: string, format: uri }
+        title: { $ref: '#/components/schemas/RenderedText' }
+        author: { type: integer }
+        caption: { $ref: '#/components/schemas/RenderedText' }
+        description: { $ref: '#/components/schemas/RenderedText' }
+        alt_text: { type: string }
+        media_type: { type: string }
+        mime_type: { type: string }
+        filename: { type: string }
+        filesize: { type: integer }
+        source_url: { type: string, format: uri }
+        post:
+          type: [integer, 'null']
+          description: The attached parent object id.
+        media_details:
+          type: object
+          description: Width, height, file, filesize, image_meta, and every generated size.
+          additionalProperties: true
+        _links: { $ref: '#/components/schemas/Links' }
+    Term:
+      type: object
+      properties:
+        id: { type: integer }
+        count: { type: integer }
+        description: { type: string }
+        link: { type: string, format: uri }
+        name: { type: string }
+        slug: { type: string }
+        taxonomy: { type: string }
+        parent: { type: integer }
+        meta:
+          type: [object, array]
+        _links: { $ref: '#/components/schemas/Links' }
+    PostType:
+      type: object
+      properties:
+        description: { type: string }
+        hierarchical: { type: boolean }
+        has_archive: { type: [boolean, string] }
+        name: { type: string }
+        slug: { type: string }
+        icon: { type: [string, 'null'] }
+        rest_base: { type: string }
+        rest_namespace: { type: string }
+        taxonomies:
+          type: array
+          items: { type: string }
+        _links: { $ref: '#/components/schemas/Links' }
+    Taxonomy:
+      type: object
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        hierarchical: { type: boolean }
+        rest_base: { type: string }
+        rest_namespace: { type: string }
+        types:
+          type: array
+          items: { type: string }
+        _links: { $ref: '#/components/schemas/Links' }
+    SearchResult:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        url: { type: string, format: uri }
+        type: { type: string }
+        subtype: { type: string }
+        _links: { $ref: '#/components/schemas/Links' }
+    OembedResponse:
+      type: object
+      properties:
+        version: { type: string, const: '1.0' }
+        provider_name: { type: string }
+        provider_url: { type: string, format: uri }
+        author_name: { type: string }
+        author_url: { type: string, format: uri }
+        title: { type: string }
+        type: { type: string }
+        width: { type: integer }
+        height: { type: [integer, 'null'] }
+        html: { type: string }
+    ApiIndex:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        url: { type: string, format: uri }
+        home: { type: string, format: uri }
+        gmt_offset: { type: [number, string] }
+        timezone_string: { type: string }
+        site_logo: { type: integer }
+        namespaces:
+          type: array
+          items: { type: string }
+        authentication:
+          type: [object, array]
+        routes:
+          type: object
+          additionalProperties: true
+        _links: { $ref: '#/components/schemas/Links' }

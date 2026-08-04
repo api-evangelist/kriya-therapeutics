@@ -1,0 +1,47 @@
+generated: '2026-08-04'
+method: probed
+source: live DNS/TLS/HTTP probes of the kriyatherapeutics.com host and registrable domain
+note: >-
+  Probed 2026-08-04 by the API Evangelist enrichment pipeline. Only Kriya Therapeutics' own host and
+  registrable domain are recorded. The apis.yml humanURL for the content API points at
+  developer.wordpress.org (the upstream WordPress REST handbook that documents the wp/v2 contract);
+  that host is not operated by Kriya Therapeutics and its posture is deliberately excluded so it is
+  not misattributed to this provider. The site is served through Cloudflare in front of WP Engine.
+  No HSTS header is sent at all, so there is no downgrade protection and the domain is not
+  preload-eligible. SPF is published (Mimecast + Microsoft 365 + Freshservice) but there is no DMARC
+  record at _dmarc.kriyatherapeutics.com, so no policy governs what receivers do with unauthenticated
+  mail claiming to be from this domain. No CAA records and no DNSSEC are published.
+hosts:
+- host: kriyatherapeutics.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 18 08:21:55 2026 GMT
+  hsts: false
+  hsts_max_age: null
+  hsts_include_subdomains: false
+  hsts_preload: false
+  server: cloudflare
+  origin: 'WP Engine (x-powered-by: WP Engine observed on REST responses)'
+  cdn: 'Cloudflare (cf-ray, cf-cache-status, cf-edge-cache=cache,platform=wordpress)'
+domains:
+- domain: kriyatherapeutics.com
+  dnssec: false
+  caa: []
+  spf: true
+  spf_record: 'v=spf1 include:us._netblocks.mimecast.com include:spf.protection.outlook.com include:email.freshservice.com ~all'
+  dmarc: false
+  dmarc_policy: null
+observations:
+- No Strict-Transport-Security header on the site root or on the REST responses.
+- No Content-Security-Policy header on the site root.
+- No X-Frame-Options, Referrer-Policy or Permissions-Policy header on the site root.
+- 'X-Content-Type-Options: nosniff IS set on the /wp-json/ REST responses.'
+- No DMARC record published for kriyatherapeutics.com, despite a valid SPF record being in place.
+- No /.well-known/security.txt (RFC 9116) published — see well-known/kriya-therapeutics-well-known.yml.
+- No api., developer., docs., status., trust., mcp. or portal. subdomain resolves for kriyatherapeutics.com (NXDOMAIN on all seven).
+- kriyatx.com resolves and 200-redirects to kriyatherapeutics.com; it serves the same WordPress deployment.
+excluded_hosts:
+- host: developer.wordpress.org
+  reason: >-
+    Upstream WordPress REST handbook referenced as the API humanURL. Not operated by Kriya
+    Therapeutics; its TLS/DNS posture is not this provider's posture.

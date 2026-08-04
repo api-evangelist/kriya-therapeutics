@@ -1,0 +1,120 @@
+generated: '2026-08-04'
+method: probed
+source: live error responses from https://kriyatherapeutics.com/wp-json/ observed 2026-08-04
+format: wordpress-rest-error
+rfc9457: false
+note: >-
+  The Kriya Therapeutics Content API does not use RFC 9457 problem+json. It returns the WordPress
+  REST error envelope as application/json — except at the edge, where an unknown object id or an
+  unknown route is answered with an nginx HTML 404 page instead. Every entry below was observed live
+  against kriyatherapeutics.com — none is inferred from the WordPress source or from documentation.
+  Kriya Therapeutics publishes no error reference of its own.
+envelope:
+  media_type: application/json
+  fields:
+    code: Machine-readable error slug, stable across WordPress versions.
+    message: Human-readable, localised message.
+    data.status: The HTTP status code, repeated in the body.
+    data.params: Present on validation failures — a map of parameter name to the specific violation.
+    data.details: Present on validation failures — per-parameter {code, message, data} objects.
+problems:
+- status: 400
+  code: rest_invalid_param
+  title: Invalid parameter(s)
+  observed_at: /wp/v2/posts?per_page=200
+  observed_body:
+    code: rest_invalid_param
+    message: 'Invalid parameter(s): per_page'
+    data:
+      status: 400
+      params:
+        per_page: per_page must be between 1 (inclusive) and 100 (inclusive)
+  remediation: >-
+    Read data.params for the offending parameter and data.details[param].code for the specific
+    violation class (rest_out_of_bounds, rest_invalid_type, rest_not_in_enum). Correct the value and
+    retry — the request is deterministic and safe to repeat.
+  source_operation: openapi/kriya-therapeutics-content-openapi.yml#listPosts
+  applies_to: [listNews, listPosts, listPages, listMedia, listCategories, listTags, listTeamKeywords, searchContent]
+- status: 404
+  code: null
+  title: nginx 404 (edge, not WordPress)
+  observed_at: /wp/v2/posts/999999 and /wp/v2/nonexistent
+  observed_body_media_type: text/html
+  observed_body: '<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>nginx</center></body></html>'
+  remediation: >-
+    THE TRAP ON THIS DEPLOYMENT. An unknown object id does NOT produce the usual WordPress
+    `rest_post_invalid_id` JSON envelope — the WP Engine edge intercepts it and returns an HTML 404.
+    A client that assumes every response body is JSON will throw a parse error rather than see a
+    clean 404. Always branch on the Content-Type header before parsing. Resolve ids from the
+    collection endpoints or from searchContent rather than constructing them.
+  source_operation: openapi/kriya-therapeutics-content-openapi.yml#getPost
+  applies_to: [getNewsItem, getPost, getPage, getMediaItem, getCategory, getTeamKeyword]
+- status: 401
+  code: rest_forbidden
+  title: Sorry, you are not allowed to do that.
+  observed_at: /wp/v2/settings, /wp-abilities/v1/abilities, /wp-abilities/v1/categories, /gutena-forms/v1/settings, /yoast/v1/statistics, /wp-site-health/v1/tests/https-status
+  observed_body:
+    code: rest_forbidden
+    message: Sorry, you are not allowed to do that.
+    data:
+      status: 401
+  remediation: >-
+    The route requires an authenticated principal. Kriya Therapeutics advertises no authentication
+    method at all (the REST index `authentication` array is empty) and does not issue credentials to
+    third parties, so these routes are not reachable by an integrator. Note the status is 401 with no
+    WWW-Authenticate challenge header.
+  gated: true
+- status: 401
+  code: rest_user_cannot_view
+  title: Sorry, you are not allowed to list users.
+  observed_at: /wp/v2/users
+  observed_body:
+    code: rest_user_cannot_view
+    message: Sorry, you are not allowed to list users.
+    data:
+      status: 401
+  remediation: >-
+    Author records are gated on this deployment, unlike WordPress core defaults. The integer `author`
+    field on posts, pages and news therefore cannot be resolved to a name by an anonymous caller —
+    treat it as an opaque id.
+  gated: true
+- status: 401
+  code: rest_cannot_view_themes
+  title: Sorry, you are not allowed to view themes.
+  observed_at: /wp/v2/themes
+  gated: true
+- status: 401
+  code: rest_cannot_view_plugins
+  title: Sorry, you are not allowed to manage plugins for this site.
+  observed_at: /wp/v2/plugins
+  gated: true
+- status: 401
+  code: rest_cannot_view
+  title: Sorry, you are not allowed to view menus.
+  observed_at: /wp/v2/menus
+  gated: true
+- status: 401
+  code: rest_block_type_cannot_view
+  title: Sorry, you are not allowed to manage block types.
+  observed_at: /wp/v2/block-types
+  gated: true
+- status: 401
+  code: rest_forbidden_context
+  title: Authorization header format is invalid.
+  observed_at: /wordfence/v1/scan/issues
+  observed_body:
+    code: rest_forbidden_context
+    message: Authorization header format is invalid.
+    data:
+      status: 401
+  remediation: >-
+    The Wordfence security-plugin namespace is registered and credential-gated. Its message differs
+    from the generic rest_forbidden because it parses the Authorization header before rejecting.
+  gated: true
+not_observed:
+- status: 403
+  note: No 403 was produced during probing — comments return 200 with an empty array rather than rest_comment_disabled.
+- status: 429
+  note: No rate-limit response was produced during probing and no rate-limit policy is published.
+- status: 500
+  note: No server error was produced during probing.

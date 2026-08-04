@@ -1,0 +1,110 @@
+generated: '2026-08-04'
+method: derived
+source: openapi/kriya-therapeutics-content-openapi.yml + live response headers observed 2026-08-04
+note: >-
+  Cross-cutting request/response semantics for the Kriya Therapeutics Content API. These are
+  WordPress core REST conventions, verified against live responses from kriyatherapeutics.com —
+  Kriya Therapeutics publishes no conventions documentation of its own. No idempotency contract
+  exists on this surface (the anonymous surface is read-only and the write surface is
+  credential-gated and unadvertised), so no Idempotency pointer is emitted in apis.yml.
+authentication:
+  style: anonymous read; cookie + X-WP-Nonce or an Authorization header for the gated surface
+  detail: authentication/kriya-therapeutics-authentication.yml
+  caveat: The site's REST index advertises NO authentication method — the `authentication` array is empty.
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    No Idempotency-Key header, parameter or documented replay contract. The anonymously reachable
+    surface is GET-only (the Allow response header on the collections reads exactly 'GET'), so
+    idempotency is a property of the HTTP method rather than a provider contract.
+pagination:
+  style: page-number
+  params:
+    page: 1-indexed page number, default 1
+    per_page: 'items per page, default 10, min 1, max 100 — out-of-range returns 400 rest_invalid_param'
+    offset: absolute row offset, available on posts/pages/news/media, overrides page when set
+  response_headers:
+    X-WP-Total: total matching records across all pages
+    X-WP-TotalPages: total number of pages at the current per_page
+    Link: RFC 8288 Link header carrying rel="next" and rel="prev"
+  cors_note: >-
+    Access-Control-Expose-Headers is set to 'X-WP-Total, X-WP-TotalPages, Link', so browser clients
+    can read the pagination signals cross-origin.
+  observed:
+    news: 'X-WP-Total 28'
+    posts: 'X-WP-Total 33, X-WP-TotalPages 33 at per_page=1'
+    pages: 'X-WP-Total 18'
+    media: 'X-WP-Total 304'
+    search: 'X-WP-Total 58'
+    team: 'X-WP-Total 0 — registered but empty'
+field_selection:
+  supported: true
+  param: _fields
+  description: >-
+    Comma-separated allowlist of top-level response fields, applied to both collection and single
+    responses. Verified live with
+    /wp/v2/news?per_page=30&_fields=date,title,link, which returned exactly those three keys.
+  embedding:
+    param: _embed
+    description: Inlines linked resources (author, featured media, terms) under an _embedded key, following the _links relations on every object.
+filtering:
+  search: '`search` free-text on posts/pages/news/media/terms; `search_columns` narrows the columns matched; `search_semantics=exact` forces exact matching (accepted, HTTP 200).'
+  date_windows: 'after / before on published date and modified_after / modified_before on modified date, all ISO 8601 — the practical way to run an incremental harvest of the news archive.'
+  identity: 'include / exclude take arrays of ids; slug takes an array of slugs.'
+  ordering: '`order` (asc|desc, default desc) plus a per-collection `orderby` enum.'
+  taxonomy: '`newscategories` / `newscategories_exclude` on news and `categories` / `tags` on posts; `tax_relation` (AND|OR) combines them. Note newscategories currently has zero terms, so news taxonomy filtering returns nothing.'
+  cross_content: '/wp/v2/search returns lightweight {id,title,url,type,subtype} results across every searchable type, filterable by type and subtype.'
+metadata:
+  supported: partial
+  note: >-
+    Posts and media expose a `meta` object and every content type exposes an `acf` (Advanced Custom
+    Fields) payload; `acf` is present in the schema on this deployment. Terms expose an empty `meta`
+    array.
+hypermedia:
+  supported: true
+  style: HAL-like `_links` object on every resource, with `self`, `collection`, `about`, `author`, `wp:attachment`, `wp:term` and `curies` relations.
+  discovery: >-
+    Every HTML response carries Link: <https://kriyatherapeutics.com/wp-json/>; rel="https://api.w.org/",
+    which is how the API root is meant to be discovered from the site.
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id, correlation-id or W3C traceparent header is returned. The only per-request
+    diagnostics are Cloudflare's `cf-ray` and `cf-cache-status`, and WP Engine's `x-cache`,
+    `x-cache-group` and `x-cacheable` headers.
+versioning:
+  scheme: uri-path namespace
+  current: wp/v2
+  note: >-
+    The namespace is fixed by WordPress core, not by Kriya Therapeutics. The site index lists all 11
+    registered namespaces at /wp-json/. See lifecycle/kriya-therapeutics-lifecycle.yml.
+error_envelope:
+  media_type: application/json
+  rfc9457: false
+  shape: '{code: string, message: string, data: {status: int, params?: object, details?: object}}'
+  caveat: >-
+    Not every error comes from WordPress. An unknown numeric object id is answered by the edge with
+    an nginx HTML 404 page, not the JSON envelope — a consumer must handle a non-JSON 404.
+  detail: errors/kriya-therapeutics-problem-types.yml
+rate_limiting:
+  documented: false
+  headers: []
+  note: >-
+    No RateLimit, X-RateLimit or Retry-After headers were observed on any response, and no rate-limit
+    policy is published. robots.txt sets `Crawl-delay: 10`, which is the only throttling signal the
+    site expresses and applies to crawlers, not to API callers. Absence of a signal is recorded, not
+    assumed to mean unlimited.
+caching:
+  cache_control: 'max-age=600, must-revalidate observed on wp/v2 collection responses (10 minutes)'
+  cdn: Cloudflare in front of WP Engine
+  edge_headers: 'x-cacheable: SHORT, x-cache: HIT/MISS, x-cache-group, cf-cache-status: DYNAMIC'
+  conditional_requests: 'No ETag or Last-Modified header observed on the JSON responses, so conditional GET is not available.'
+robots:
+  note: 'JSON responses carry x-robots-tag: noindex.'
+content_caveat: >-
+  Unlike many WordPress corporate sites, page and news bodies are returned as Gutenberg BLOCK markup
+  — semantic HTML with `wp-block-*` classes plus a small number of theme blocks
+  (`wp-block-kriya-blocks-page-hero`) — not page-builder shortcodes. Press-release bodies in the
+  `news` collection are clean `<p>`/`<a>`/`<em>` HTML and are directly usable after HTML entity
+  decoding. Page bodies carry more presentational wrapper markup and should be reduced to text.

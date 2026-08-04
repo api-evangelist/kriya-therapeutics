@@ -1,0 +1,102 @@
+generated: '2026-08-04'
+method: derived
+source: openapi/kriya-therapeutics-content-openapi.yml + live probes of https://kriyatherapeutics.com on 2026-08-04
+note: >-
+  Cross-cutting standards conformance for the Kriya Therapeutics Content API. Derived from the spec
+  and live responses; nothing here rests on a compliance claim by Kriya Therapeutics, because it
+  publishes none. No Compliance pointer is emitted in apis.yml: Kriya Therapeutics operates no trust
+  center and names no certification (SOC 2, ISO 27001, HIPAA, GDPR programme page or equivalent) on
+  any public page. As a clinical-stage sponsor with in-house GMP manufacturing its regulatory posture
+  is FDA/EMA drug-development and cGMP regulation — including selection for the FDA PreCheck Pilot
+  Program in June 2026 — which is not an API compliance programme and is not asserted here as one.
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: openapi/kriya-therapeutics-content-openapi.yml is an API Evangelist derivation, not a provider-published spec.
+  published_by_provider: false
+- id: rest
+  conforms: true
+  evidence: Resource-oriented URIs, GET-only anonymous surface, JSON representations, standard status codes.
+- id: hateoas
+  conforms: true
+  evidence: Every resource carries a `_links` object with self/collection/about/author/wp:term relations plus curies; _embed inlines them.
+- id: rfc8288-web-linking
+  conforms: true
+  evidence: 'Link header used for pagination (rel=next/prev) and for API discovery from HTML (rel="https://api.w.org/").'
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors are served as application/json with the WordPress {code,message,data} envelope, not application/problem+json — and an unknown id returns an nginx HTML 404 with no envelope at all. See errors/kriya-therapeutics-problem-types.yml.
+- id: oembed-1.0
+  conforms: true
+  evidence: /oembed/1.0/embed returns a valid oEmbed 1.0 rich response; verified live for https://kriyatherapeutics.com/ (provider_name "Kriya Therapeutics").
+- id: rss-2.0
+  conforms: true
+  evidence: /feed/ and /newsroom/feed/ both return 200 with an RSS channel.
+- id: sitemaps-0.9
+  conforms: true
+  evidence: /sitemap_index.xml is a Yoast sitemapindex in the sitemaps.org 0.9 namespace, declared in robots.txt, with post/page/news child sitemaps.
+- id: cors
+  conforms: true
+  evidence: 'Access-Control-Allow-Headers and Access-Control-Expose-Headers (X-WP-Total, X-WP-TotalPages, Link) are set on the REST responses.'
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 security scheme, no authorization server, no /.well-known/oauth-authorization-server (404).
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on kriyatherapeutics.com, kriyatx.com and www.kriyatherapeutics.com.
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header observed; no deprecation policy published.
+- id: idempotency-key
+  conforms: false
+  evidence: No idempotency header or documented replay contract. The anonymous surface is GET-only (Allow header reads exactly 'GET').
+- id: pagination
+  conforms: true
+  evidence: 'page/per_page with X-WP-Total, X-WP-TotalPages and RFC 8288 Link headers; per_page bounds enforced with a 400 rest_invalid_param.'
+- id: http-caching
+  conforms: partial
+  evidence: 'Cache-Control max-age=600, must-revalidate is set, but no ETag and no Last-Modified header is returned, so conditional GET / revalidation is not actually possible.'
+- id: hsts
+  conforms: false
+  evidence: No Strict-Transport-Security header on the site root or the REST responses. See security/kriya-therapeutics-domain-security.yml.
+- id: dmarc
+  conforms: false
+  evidence: No DMARC record at _dmarc.kriyatherapeutics.com, although a valid SPF record is published.
+- id: a2a
+  conforms: false
+  evidence: No agent card at /.well-known/agent-card.json or /.well-known/agent.json (both 404 on every host probed).
+- id: mcp
+  conforms: false
+  evidence: >-
+    No MCP server published; mcp.kriyatherapeutics.com does not resolve. The site registers the
+    WordPress Abilities API (wp-abilities/v1) — an agent capability registry with a /run execution
+    endpoint — but every route under it returns 401 anonymously, so no agent capability is exposed.
+- id: llmstxt
+  conforms: false
+  evidence: /llms.txt returns 404. The llms/ artifact in this repo is an API Evangelist generation, clearly marked as such.
+- id: json-api
+  conforms: false
+  evidence: Responses are plain JSON, not the JSON:API media type or document structure.
+- id: fhir
+  conforms: false
+  evidence: No health-data API surface. Kriya Therapeutics exposes no clinical, trial or patient data over an API.
+- id: hl7
+  conforms: false
+  evidence: No health-data interchange surface.
+- id: cdisc
+  conforms: false
+  evidence: No clinical trial data standard surface; no trial-data exchange endpoint of any kind.
+certifications_published: []
+compliance_program_published: false
+regulatory_context:
+  note: >-
+    Recorded for completeness, NOT as API conformance. Kriya Therapeutics is an FDA/EMA-regulated
+    clinical-stage sponsor operating an in-house cGMP manufacturing facility (1L to 3,000L bioreactor
+    scale), and was selected for the FDA PreCheck Pilot Program in June 2026. None of this is
+    published as, or reachable through, an API.

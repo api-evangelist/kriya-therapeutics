@@ -1,0 +1,85 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Kriya Therapeutics Content API
+  version: 1.0.0
+extends: openapi/kriya-therapeutics-content-openapi.yml
+x-api-evangelist-note: >-
+  Kriya Therapeutics publishes no OpenAPI. The document this overlay extends is itself an API
+  Evangelist derivation of the WordPress REST route index at https://kriyatherapeutics.com/wp-json/.
+  This overlay carries the enhancements the enrichment pipeline adds on top of that derivation —
+  provider identity, artifact cross-links and per-tag caveats — so the derived spec stays a faithful
+  projection of the route index and the editorial layer stays separable from it.
+actions:
+- target: $.info
+  update:
+    x-api-evangelist-provider: kriya-therapeutics
+    x-api-evangelist-provider-name: Kriya Therapeutics
+    x-api-evangelist-provider-type: clinical-stage biopharmaceutical (gene therapy)
+    x-api-evangelist-surface-class: cms-content-api
+    x-api-evangelist-provider-publishes-spec: false
+    x-api-evangelist-harvested: '2026-08-04'
+    x-api-evangelist-artifacts:
+      authentication: authentication/kriya-therapeutics-authentication.yml
+      conventions: conventions/kriya-therapeutics-conventions.yml
+      errors: errors/kriya-therapeutics-problem-types.yml
+      data_model: data-model/kriya-therapeutics-data-model.yml
+      conformance: conformance/kriya-therapeutics-conformance.yml
+      lifecycle: lifecycle/kriya-therapeutics-lifecycle.yml
+      well_known: well-known/kriya-therapeutics-well-known.yml
+      domain_security: security/kriya-therapeutics-domain-security.yml
+      skills: skills/_index.yml
+- target: $.info
+  update:
+    x-api-evangelist-anonymous-read: true
+    x-api-evangelist-auth-advertised-by-provider: false
+    x-api-evangelist-gated-namespaces:
+    - wp-abilities/v1
+    - gutena-forms/v1
+    - yoast/v1
+    - wordfence/v1
+    - wp-site-health/v1
+    - wp-block-editor/v1
+    - wpe/cache-plugin/v1
+    - wpe_sign_on_plugin/v1
+- target: $.tags[?(@.name=='news')]
+  update:
+    x-api-evangelist-primary: true
+    x-api-evangelist-note: >-
+      The differentiating collection on this deployment. Unlike most corporate WordPress sites in the
+      catalog, Kriya Therapeutics registered a `news` custom post type, so its entire press-release
+      archive (28 items, 2020-05-12 through 2026-06-29) is individually addressable, date-filterable
+      and returned as clean Gutenberg block HTML.
+- target: $.tags[?(@.name=='team')]
+  update:
+    x-api-evangelist-empty-collection: true
+    x-api-evangelist-note: >-
+      Verified empty on 2026-08-04 (X-WP-Total 0). The `team` post type and its `teamkeywords`
+      taxonomy are registered, but leadership, board and advisor records are stored as core `post`
+      records categorised into bod/leadership/sab instead. Query `listPosts` with those category
+      ids, not `listTeam`.
+- target: $.tags[?(@.name=='taxonomy')]
+  update:
+    x-api-evangelist-note: >-
+      Only the `category` taxonomy is populated, and it encodes PEOPLE groupings (leadership 17, bod
+      10, sab 6) rather than topics. `newscategories` and `post_tag` have zero terms; the four
+      `teamkeywords` terms all report count 0. Filtering news by taxonomy returns nothing.
+- target: $.tags[?(@.name=='pages')]
+  update:
+    x-api-evangelist-note: >-
+      content.rendered returns Gutenberg block markup — semantic HTML with wp-block-* classes plus
+      theme blocks such as wp-block-kriya-blocks-page-hero — not page-builder shortcodes. Reduce to
+      text before use, but no shortcode stripping is required.
+- target: $.paths['/wp/v2/news'].get
+  update:
+    x-api-evangelist-primary: true
+    x-api-evangelist-note: >-
+      The highest-value operation on this surface. Use after/before/modified_after for an incremental
+      harvest of the company's financing, acquisition, licensing and executive-appointment history.
+- target: $.paths['/wp/v2/media'].get
+  update:
+    x-api-evangelist-note: 304 attachments at harvest time, including logos, pipeline graphics and press-release imagery.
+- target: $.paths['/wp/v2/news/{id}'].get
+  update:
+    x-api-evangelist-note: >-
+      An unknown id returns an nginx HTML 404 from the edge, NOT the WordPress rest_post_invalid_id
+      JSON envelope. Branch on Content-Type before parsing. See errors/.

@@ -1,0 +1,126 @@
+generated: '2026-08-04'
+method: probed
+source: https://kriyatherapeutics.com/wp-json/ (REST API index) plus live anonymous requests on 2026-08-04
+note: >-
+  The OpenAPI in this repo declares no securitySchemes because the operations it models are the ones
+  that genuinely return data with no credentials — the read side of the WordPress REST content API is
+  fully anonymous. This profile records that anonymous-read model and the authenticated surface that
+  sits behind it. Note that unlike most WordPress deployments, the `authentication` block in this
+  site's own REST index is an EMPTY array: Kriya Therapeutics advertises no authentication method at
+  all, so the gated routes below return 401 with no advertised way for a third party to authenticate.
+  Kriya Therapeutics publishes no developer authentication documentation of its own; the schemes
+  below are WordPress core behaviour observed on the wire.
+summary:
+  types: [none, apiKey, http]
+  anonymous_read: true
+  api_key_in: [header]
+  oauth2_flows: []
+  oauth2: false
+  openid_connect: false
+  advertised_by_provider: false
+schemes:
+- name: anonymous
+  type: none
+  description: >-
+    Every operation modelled in openapi/kriya-therapeutics-content-openapi.yml was verified to return
+    data with no Authorization header, no cookie and no nonce. Read access is unrestricted and
+    unmetered as observed.
+  applies_to:
+  - getApiIndex
+  - listNews
+  - getNewsItem
+  - listPosts
+  - getPost
+  - listPages
+  - getPage
+  - listTeam
+  - listMedia
+  - getMediaItem
+  - listCategories
+  - getCategory
+  - listTags
+  - listNewsCategories
+  - listTeamKeywords
+  - getTeamKeyword
+  - listComments
+  - listForms
+  - searchContent
+  - listTypes
+  - getType
+  - listTaxonomies
+  - getTaxonomy
+  - listStatuses
+  - getOembed
+  sources: [openapi/kriya-therapeutics-content-openapi.yml]
+- name: cookie-plus-nonce
+  type: apiKey
+  in: header
+  parameter_name: X-WP-Nonce
+  description: >-
+    WordPress core's first-party session scheme for same-origin browser requests. Inferred from the
+    Access-Control-Allow-Headers response header observed on the collection endpoints, which lists
+    'Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type'. Not usable by a
+    third-party integrator.
+  sources: [https://kriyatherapeutics.com/wp-json/wp/v2/posts]
+- name: authorization-header
+  type: http
+  scheme: unspecified
+  description: >-
+    The CORS preflight allowlist includes `Authorization`, and the Wordfence namespace rejects
+    anonymous calls with `rest_forbidden_context: Authorization header format is invalid.` — so an
+    Authorization header is accepted and parsed by the deployment. Kriya Therapeutics advertises no
+    method for obtaining such a credential (the REST index `authentication` array is empty), so this
+    is an internal editorial credential, not a developer credential.
+  sources:
+  - https://kriyatherapeutics.com/wp-json/wordfence/v1/scan/issues
+  - https://kriyatherapeutics.com/wp-json/wp/v2/posts
+gated_surfaces:
+- path: /wp/v2/settings
+  status: 401
+  code: rest_forbidden
+- path: /wp/v2/users
+  status: 401
+  code: rest_user_cannot_view
+  note: Author records are not readable anonymously on this deployment, unlike WordPress default.
+- path: /wp/v2/themes
+  status: 401
+  code: rest_cannot_view_themes
+- path: /wp/v2/plugins
+  status: 401
+  code: rest_cannot_view_plugins
+- path: /wp/v2/menus
+  status: 401
+  code: rest_cannot_view
+- path: /wp/v2/block-types
+  status: 401
+  code: rest_block_type_cannot_view
+- path: /wp-abilities/v1/abilities
+  status: 401
+  code: rest_forbidden
+  note: >-
+    The WordPress Abilities API — an agent-facing capability registry with a /run execution
+    endpoint — is registered on this site but is entirely credential-gated. No agent capability is
+    exposed to anonymous callers, so no MCP or agent-surface claim is made for this provider.
+- path: /wp-abilities/v1/categories
+  status: 401
+  code: rest_forbidden
+- path: /gutena-forms/v1/forms/get-all
+  status: 401
+  code: rest_forbidden
+  note: Form definitions are readable via /wp/v2/gutena_forms, but the plugin's own form and ENTRY endpoints are gated — submitted form entries are not exposed anonymously.
+- path: /gutena-forms/v1/settings
+  status: 401
+  code: rest_forbidden
+- path: /yoast/v1/statistics
+  status: 401
+  code: rest_forbidden
+- path: /wordfence/v1/scan/issues
+  status: 401
+  code: rest_forbidden_context
+  note: 'Message reads "Authorization header format is invalid." — the Wordfence security plugin namespace is registered and credential-gated.'
+- path: /wp-site-health/v1/tests/https-status
+  status: 401
+  code: rest_forbidden
+- path: /wpe_sign_on_plugin/v1/is_user_logged_in
+  status: 307
+  note: WP Engine single-sign-on plugin route; redirects rather than answering anonymously.
