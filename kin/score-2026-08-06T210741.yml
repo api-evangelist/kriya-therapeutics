@@ -1,0 +1,43 @@
+# Kin Score artifact — kriya-therapeutics — 2026-08-06T210741
+# The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
+---
+kin_score:
+  slug: kriya-therapeutics
+  schema_version: 0.9.1
+  scored_at: '2026-08-06'
+  run_ts: 2026-08-06T210741
+  composite: 30.7
+  band: thin
+  facets:
+    discoverability: 87.0
+    contract_quality: 52.2
+    governance: 11.5
+    operational_transparency: 0.0
+    developer_ergonomics: 16.8
+    commercial_clarity: 21.1
+  agent_readiness:
+    score: 36.7
+    band: agent-ready
+    dimensions:
+      spec_presence: true
+      agentic_access: false
+      mcp_server: false
+      auth_clarity: true
+      idempotency: false
+      error_semantics: documented
+      openapi_examples: partial
+      rate_limit_signal: false
+      event_surface_described: false
+      agent_skills: derived
+      well_known_catalog: true
+      consent_identity: false
+      agent_card: false
+      dry_run_mode: false
+  provenance:
+    skills: derived
+    conformance: derived
+    contracts:
+      total: 1
+      derived: 0
+      coverage: 0.0
+      callable: 100.0
