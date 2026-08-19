@@ -1,0 +1,168 @@
+openapi: 3.2.0
+info:
+  title: Kriya Therapeutics Content Forms API
+  version: wp/v2
+  summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
+  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  contact:
+    name: Kriya Therapeutics
+    url: https://kriyatherapeutics.com/connect/
+  x-api-evangelist-provenance: 'Derived by the API Evangelist enrichment pipeline from the live WordPress REST route index at https://kriyatherapeutics.com/wp-json/ (227 routes across the namespaces oembed/1.0, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1, cookie-notice/v1, gutena-forms/v1, wordfence/v1, yoast/v1, wp/v2, wp-site-health/v1, wp-block-editor/v1, wp-abilities/v1) and verified against live anonymous responses on 2026-08-04. Every parameter below appears verbatim in the route index `args` for that endpoint, read from an OPTIONS request against the collection. Observed collection sizes on the harvest date: posts 33, pages 18, news 28, media 304, categories 7, teamkeywords 4, gutena_forms 1, search 58; team 0, newscategories 0, tags 0, comments 0. Kriya Therapeutics publishes no OpenAPI, no developer documentation and no API reference for this surface; the humanURL in apis.yml points at the upstream WordPress REST handbook that defines the wp/v2 contract. Nothing here was obtained with credentials.'
+servers:
+- url: https://kriyatherapeutics.com/wp-json
+  description: Production content API
+tags:
+- name: forms
+  description: The `gutena_forms` custom post type used for the site contact form.
+paths:
+  /wp/v2/gutena_forms:
+    get:
+      tags:
+      - forms
+      operationId: listForms
+      summary: List published form definitions
+      description: Lists items of the `gutena_forms` custom post type — the block-editor form definitions used on the site. One item is published (the Contact Form). The form *entries* endpoints under the gutena-forms/v1 namespace are credential-gated (401) and are not modelled.
+      parameters:
+      - $ref: '#/components/parameters/Context'
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Search'
+      - $ref: '#/components/parameters/Slug'
+      responses:
+        '200':
+          description: A page of form definitions.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+components:
+  parameters:
+    Slug:
+      name: slug
+      in: query
+      description: Limit result set to items with one or more specific slugs.
+      schema:
+        type: array
+        items:
+          type: string
+    PerPage:
+      name: per_page
+      in: query
+      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum:
+        - view
+        - embed
+        - edit
+        default: view
+    Page:
+      name: page
+      in: query
+      description: Current page of the collection.
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    Search:
+      name: search
+      in: query
+      description: Limit results to those matching a string.
+      schema:
+        type: string
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date-time
+        date_gmt:
+          type: string
+          format: date-time
+        guid:
+          $ref: '#/components/schemas/RenderedText'
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        link:
+          type: string
+          format: uri
+        title:
+          $ref: '#/components/schemas/RenderedText'
+        content:
+          $ref: '#/components/schemas/RenderedText'
+        excerpt:
+          $ref: '#/components/schemas/RenderedText'
+        author:
+          type: integer
+        featured_media:
+          type: integer
+        comment_status:
+          type: string
+        ping_status:
+          type: string
+        sticky:
+          type: boolean
+        template:
+          type: string
+        format:
+          type: string
+        categories:
+          type: array
+          items:
+            type: integer
+        tags:
+          type: array
+          items:
+            type: integer
+        class_list:
+          type: array
+          items:
+            type: string
+        acf:
+          description: Advanced Custom Fields payload exposed on this deployment.
+          type:
+          - object
+          - array
+        _links:
+          $ref: '#/components/schemas/Links'
+    Links:
+      type: object
+      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
+      additionalProperties: true
+    RenderedText:
+      type: object
+      properties:
+        rendered:
+          type: string
+  headers:
+    XWPTotal:
+      description: Total number of items in the unpaginated collection.
+      schema:
+        type: integer

@@ -1,0 +1,52 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Kriya Therapeutics Content Oembed API",
+    "version": "wp/v2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "oembed",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get an oEmbed response for a kriyatherapeutics.com URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://kriyatherapeutics.com/wp-json/oembed/1.0/embed",
+            "params": [
+              {
+                "name": "url",
+                "value": "",
+                "type": "query",
+                "description": "The URL of the resource to embed. Must be a kriyatherapeutics.com URL."
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "maxwidth",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "maxheight",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "oEmbed 1.0 provider endpoint. Verified live for https://kriyatherapeutics.com/ — returns provider_name \"Kriya Therapeutics\", provider_url, title, type and the embed HTML."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

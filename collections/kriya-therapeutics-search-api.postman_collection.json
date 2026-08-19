@@ -1,0 +1,230 @@
+{
+  "item": [
+    {
+      "id": "6d2d6108-af56-4f72-9e94-0d0aed564ac0",
+      "name": "search",
+      "description": {
+        "content": "Cross-content search across published objects.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "09815679-a9d2-4b83-98b0-01562ac63718",
+          "name": "Search published content",
+          "request": {
+            "name": "Search published content",
+            "description": {
+              "content": "Cross-content search over published objects (58 indexed on this deployment). Returns a lightweight result shape — id, title, url, type, subtype — rather than full objects; follow the `self` link in `_links` to retrieve the full record.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "wp",
+                "v2",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "context",
+                  "value": "view",
+                  "description": "Scope under which the request is made; determines fields present in the response."
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "1",
+                  "description": "Current page of the collection."
+                },
+                {
+                  "disabled": false,
+                  "key": "per_page",
+                  "value": "10",
+                  "description": "Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param."
+                },
+                {
+                  "disabled": false,
+                  "key": "search",
+                  "value": "<string>",
+                  "description": "(Required) Limit results to those matching a string."
+                },
+                {
+                  "disabled": false,
+                  "key": "type",
+                  "value": "<string>",
+                  "description": "Limit results to items of an object type."
+                },
+                {
+                  "disabled": false,
+                  "key": "subtype",
+                  "value": "<string>",
+                  "description": "Limit results to items of one or more object subtypes (e.g. post, page, news)."
+                },
+                {
+                  "disabled": false,
+                  "key": "subtype",
+                  "value": "<string>",
+                  "description": "Limit results to items of one or more object subtypes (e.g. post, page, news)."
+                },
+                {
+                  "disabled": false,
+                  "key": "exclude",
+                  "value": "<integer>",
+                  "description": "Ensure result set excludes specific IDs."
+                },
+                {
+                  "disabled": false,
+                  "key": "exclude",
+                  "value": "<integer>",
+                  "description": "Ensure result set excludes specific IDs."
+                },
+                {
+                  "disabled": false,
+                  "key": "include",
+                  "value": "<integer>",
+                  "description": "Limit result set to specific IDs."
+                },
+                {
+                  "disabled": false,
+                  "key": "include",
+                  "value": "<integer>",
+                  "description": "Limit result set to specific IDs."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8dfa1bcf-f0d7-4736-af68-69f08b367f7a",
+              "name": "A page of search results.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "wp",
+                    "v2",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "context",
+                      "value": "view"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "per_page",
+                      "value": "10"
+                    },
+                    {
+                      "key": "search",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "subtype",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "subtype",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "exclude",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "exclude",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "include",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "include",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "Total number of items in the unpaginated collection.",
+                  "key": "X-WP-Total",
+                  "value": "9006"
+                },
+                {
+                  "disabled": false,
+                  "description": "Total number of pages available at the requested per_page.",
+                  "key": "X-WP-TotalPages",
+                  "value": "9006"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 4106,\n    \"title\": \"string\",\n    \"url\": \"https://mqWRxARROqEBUMmtEaiuQRxNqSSw.dvhdUqI8wknK,nA,ihh-NM9+X-WGmdXwzo7+6i5KUoDmIFBitK9QWsFg7QBkJUJVGfSyG,jFwhhKS\",\n    \"type\": \"string\",\n    \"subtype\": \"string\",\n    \"_links\": {\n      \"key_0\": false\n    }\n  },\n  {\n    \"id\": 5233,\n    \"title\": \"string\",\n    \"url\": \"https://PmfAdMKfPTdMutxutVGgJHBWCUV.ebfTa07rFSaWuiEukoObtEYbqNIQN9z8bSBQryXCmciE4f4diNFe8Ccww,mKxtSNerQ7q.DtJD,ljYGm0ubMbE\",\n    \"type\": \"string\",\n    \"subtype\": \"string\",\n    \"_links\": {\n      \"key_0\": false,\n      \"key_1\": 3815.6966280519678\n    }\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://kriyatherapeutics.com/wp-json",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "409f8961-6538-4d54-a013-13f173f08ab7",
+    "name": "Kriya Therapeutics Content Search API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.\n\nContact Support:\n Name: Kriya Therapeutics",
+      "type": "text/plain"
+    }
+  }
+}

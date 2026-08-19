@@ -1,0 +1,61 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Kriya Therapeutics Content Forms API",
+    "version": "wp/v2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "forms",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List published form definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://kriyatherapeutics.com/wp-json/wp/v2/gutena_forms",
+            "params": [
+              {
+                "name": "context",
+                "value": "",
+                "type": "query",
+                "description": "Scope under which the request is made; determines fields present in the response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Current page of the collection."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param."
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Limit results to those matching a string."
+              },
+              {
+                "name": "slug",
+                "value": "",
+                "type": "query",
+                "description": "Limit result set to items with one or more specific slugs."
+              }
+            ]
+          },
+          "docs": "Lists items of the `gutena_forms` custom post type — the block-editor form definitions used on the site. One item is published (the Contact Form). The form *entries* endpoints under the gutena-forms/v1 namespace are credential-gated (401) and are not modelled."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

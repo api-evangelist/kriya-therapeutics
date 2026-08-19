@@ -1,0 +1,199 @@
+{
+  "item": [
+    {
+      "id": "98e53be3-293a-4b43-8a60-d0dff1e73565",
+      "name": "oembed",
+      "description": {
+        "content": "oEmbed 1.0 provider endpoint for kriyatherapeutics.com URLs.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "ccd25eb3-dc77-42f8-90d0-2d3ff4d9e72c",
+          "name": "Get an oEmbed response for a kriyatherapeutics.com URL",
+          "request": {
+            "name": "Get an oEmbed response for a kriyatherapeutics.com URL",
+            "description": {
+              "content": "oEmbed 1.0 provider endpoint. Verified live for https://kriyatherapeutics.com/ — returns provider_name \"Kriya Therapeutics\", provider_url, title, type and the embed HTML.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "oembed",
+                "1.0",
+                "embed"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "url",
+                  "value": "<uri>",
+                  "description": "(Required) The URL of the resource to embed. Must be a kriyatherapeutics.com URL."
+                },
+                {
+                  "disabled": false,
+                  "key": "format",
+                  "value": "json"
+                },
+                {
+                  "disabled": false,
+                  "key": "maxwidth",
+                  "value": "600"
+                },
+                {
+                  "disabled": false,
+                  "key": "maxheight",
+                  "value": "<integer>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "eef63460-c3e3-413d-8445-fff1fe81ddd2",
+              "name": "oEmbed 1.0 response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oembed",
+                    "1.0",
+                    "embed"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "url",
+                      "value": "<uri>"
+                    },
+                    {
+                      "key": "format",
+                      "value": "json"
+                    },
+                    {
+                      "key": "maxwidth",
+                      "value": "600"
+                    },
+                    {
+                      "key": "maxheight",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"version\": \"string\",\n  \"provider_name\": \"string\",\n  \"provider_url\": \"https://JxgenFgeBhXVsqTpTWFkHip.xysiRwqQ8agfKWW-MMHoJoZTs,k1uSJ4R1c3HTPLh,Zvt7CaQH\",\n  \"author_name\": \"string\",\n  \"author_url\": \"https://uhUCwGwSYTGXiQpyIdMSstmqH.cfLVu0fYVC3CXUENy\",\n  \"title\": \"string\",\n  \"type\": \"string\",\n  \"width\": 6326,\n  \"height\": null,\n  \"html\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c6229455-272d-42fe-a49c-da3ad73db64a",
+              "name": "The object was not found. Note that on this deployment an unknown numeric id is answered by the edge with an nginx HTML 404 page rather than the WordPress rest_post_invalid_id JSON envelope — see errors/kriya-therapeutics-problem-types.yml.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "oembed",
+                    "1.0",
+                    "embed"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "url",
+                      "value": "<uri>"
+                    },
+                    {
+                      "key": "format",
+                      "value": "json"
+                    },
+                    {
+                      "key": "maxwidth",
+                      "value": "600"
+                    },
+                    {
+                      "key": "maxheight",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": \"string\",\n  \"message\": \"string\",\n  \"data\": {\n    \"status\": 5734,\n    \"params\": {\n      \"key_0\": \"string\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://kriyatherapeutics.com/wp-json",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "70b3e0a3-4a92-43da-acb7-3a30b49e1685",
+    "name": "Kriya Therapeutics Content Oembed API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.\n\nContact Support:\n Name: Kriya Therapeutics",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,375 @@
+openapi: 3.2.0
+info:
+  title: Kriya Therapeutics Content News API
+  version: wp/v2
+  summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
+  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  contact:
+    name: Kriya Therapeutics
+    url: https://kriyatherapeutics.com/connect/
+  x-api-evangelist-provenance: 'Derived by the API Evangelist enrichment pipeline from the live WordPress REST route index at https://kriyatherapeutics.com/wp-json/ (227 routes across the namespaces oembed/1.0, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1, cookie-notice/v1, gutena-forms/v1, wordfence/v1, yoast/v1, wp/v2, wp-site-health/v1, wp-block-editor/v1, wp-abilities/v1) and verified against live anonymous responses on 2026-08-04. Every parameter below appears verbatim in the route index `args` for that endpoint, read from an OPTIONS request against the collection. Observed collection sizes on the harvest date: posts 33, pages 18, news 28, media 304, categories 7, teamkeywords 4, gutena_forms 1, search 58; team 0, newscategories 0, tags 0, comments 0. Kriya Therapeutics publishes no OpenAPI, no developer documentation and no API reference for this surface; the humanURL in apis.yml points at the upstream WordPress REST handbook that defines the wp/v2 contract. Nothing here was obtained with credentials.'
+servers:
+- url: https://kriyatherapeutics.com/wp-json
+  description: Production content API
+tags:
+- name: news
+  description: The `news` custom post type — the company press-release archive (28 items at harvest, back to May 2020).
+paths:
+  /wp/v2/news:
+    get:
+      tags:
+      - news
+      operationId: listNews
+      summary: List news items
+      description: Lists published items of the `news` custom post type — Kriya Therapeutics' press-release archive. This is the richest collection on the deployment (28 items at harvest, from the May 2020 Series A announcement to the June 2026 FDA PreCheck Pilot Program selection) and the only place the archive is individually addressable and date-filterable.
+      parameters:
+      - $ref: '#/components/parameters/Context'
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Search'
+      - $ref: '#/components/parameters/After'
+      - $ref: '#/components/parameters/Before'
+      - $ref: '#/components/parameters/ModifiedAfter'
+      - $ref: '#/components/parameters/ModifiedBefore'
+      - $ref: '#/components/parameters/Exclude'
+      - $ref: '#/components/parameters/Include'
+      - $ref: '#/components/parameters/Offset'
+      - $ref: '#/components/parameters/Order'
+      - $ref: '#/components/parameters/OrderBy'
+      - $ref: '#/components/parameters/Slug'
+      - $ref: '#/components/parameters/SearchColumns'
+      - $ref: '#/components/parameters/Parent'
+      - $ref: '#/components/parameters/ParentExclude'
+      - name: newscategories
+        in: query
+        description: Limit result set to items with specific `newscategories` terms.
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: newscategories_exclude
+        in: query
+        description: Limit result set to items except those with specific `newscategories` terms.
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: tax_relation
+        in: query
+        description: Limit result set based on relationship between multiple taxonomies.
+        schema:
+          type: string
+          enum:
+          - AND
+          - OR
+      responses:
+        '200':
+          description: A page of news items.
+          headers:
+            X-WP-Total:
+              $ref: '#/components/headers/XWPTotal'
+            X-WP-TotalPages:
+              $ref: '#/components/headers/XWPTotalPages'
+            Link:
+              $ref: '#/components/headers/LinkPagination'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsItem'
+        '400':
+          $ref: '#/components/responses/InvalidParam'
+  /wp/v2/news/{id}:
+    get:
+      tags:
+      - news
+      operationId: getNewsItem
+      summary: Get a news item
+      parameters:
+      - $ref: '#/components/parameters/PathId'
+      - $ref: '#/components/parameters/Context'
+      responses:
+        '200':
+          description: A single news item.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    ModifiedBefore:
+      name: modified_before
+      in: query
+      description: Limit response to posts modified before a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    Search:
+      name: search
+      in: query
+      description: Limit results to those matching a string.
+      schema:
+        type: string
+    Include:
+      name: include
+      in: query
+      description: Limit result set to specific IDs.
+      schema:
+        type: array
+        items:
+          type: integer
+    Before:
+      name: before
+      in: query
+      description: Limit response to posts published before a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    ModifiedAfter:
+      name: modified_after
+      in: query
+      description: Limit response to posts modified after a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    Order:
+      name: order
+      in: query
+      description: Order sort attribute ascending or descending.
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+        default: desc
+    PathId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the object.
+      schema:
+        type: integer
+    Slug:
+      name: slug
+      in: query
+      description: Limit result set to items with one or more specific slugs.
+      schema:
+        type: array
+        items:
+          type: string
+    OrderBy:
+      name: orderby
+      in: query
+      description: Sort collection by object attribute.
+      schema:
+        type: string
+        examples:
+        - date
+        - id
+        - title
+        - slug
+        - modified
+        - relevance
+    Exclude:
+      name: exclude
+      in: query
+      description: Ensure result set excludes specific IDs.
+      schema:
+        type: array
+        items:
+          type: integer
+    ParentExclude:
+      name: parent_exclude
+      in: query
+      description: Limit result set to all items except those of a particular parent ID.
+      schema:
+        type: array
+        items:
+          type: integer
+    SearchColumns:
+      name: search_columns
+      in: query
+      description: Array of column names to be searched.
+      schema:
+        type: array
+        items:
+          type: string
+    Offset:
+      name: offset
+      in: query
+      description: Offset the result set by a specific number of items.
+      schema:
+        type: integer
+    PerPage:
+      name: per_page
+      in: query
+      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum:
+        - view
+        - embed
+        - edit
+        default: view
+    Page:
+      name: page
+      in: query
+      description: Current page of the collection.
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    Parent:
+      name: parent
+      in: query
+      description: Limit result set to items with particular parent IDs.
+      schema:
+        type: array
+        items:
+          type: integer
+    After:
+      name: after
+      in: query
+      description: Limit response to posts published after a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+  schemas:
+    RenderedText:
+      type: object
+      properties:
+        rendered:
+          type: string
+    NewsItem:
+      type: object
+      description: An item of the `news` custom post type. Hierarchical (carries `parent`), taxonomised with `newscategories`, and without the comment/ping/sticky/format fields of a core post.
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date-time
+        date_gmt:
+          type: string
+          format: date-time
+        guid:
+          $ref: '#/components/schemas/RenderedText'
+        modified:
+          type: string
+          format: date-time
+        modified_gmt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+          const: news
+        link:
+          type: string
+          format: uri
+        title:
+          $ref: '#/components/schemas/RenderedText'
+        content:
+          $ref: '#/components/schemas/RenderedText'
+        excerpt:
+          $ref: '#/components/schemas/RenderedText'
+        author:
+          type: integer
+        featured_media:
+          type: integer
+        parent:
+          type: integer
+        template:
+          type: string
+        newscategories:
+          type: array
+          items:
+            type: integer
+        class_list:
+          type: array
+          items:
+            type: string
+        acf:
+          type:
+          - object
+          - array
+        _links:
+          $ref: '#/components/schemas/Links'
+    WPError:
+      type: object
+      description: The WordPress REST error envelope. Not RFC 9457.
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+            params:
+              type: object
+              additionalProperties:
+                type: string
+      required:
+      - code
+      - message
+      - data
+    Links:
+      type: object
+      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
+      additionalProperties: true
+  headers:
+    XWPTotal:
+      description: Total number of items in the unpaginated collection.
+      schema:
+        type: integer
+    LinkPagination:
+      description: RFC 8288 Link header carrying rel="next" and rel="prev" pagination links.
+      schema:
+        type: string
+    XWPTotalPages:
+      description: Total number of pages available at the requested per_page.
+      schema:
+        type: integer
+  responses:
+    NotFound:
+      description: The object was not found. Note that on this deployment an unknown numeric id is answered by the edge with an nginx HTML 404 page rather than the WordPress rest_post_invalid_id JSON envelope — see errors/kriya-therapeutics-problem-types.yml.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+        text/html:
+          schema:
+            type: string
+    InvalidParam:
+      description: A query parameter failed validation. WordPress returns its own JSON envelope {code,message,data} with application/json — not RFC 9457 application/problem+json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+          examples:
+            per_page:
+              value:
+                code: rest_invalid_param
+                message: 'Invalid parameter(s): per_page'
+                data:
+                  status: 400
+                  params:
+                    per_page: per_page must be between 1 (inclusive) and 100 (inclusive)

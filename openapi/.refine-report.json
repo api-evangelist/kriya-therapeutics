@@ -1,0 +1,44 @@
+{
+  "provider": "kriya-therapeutics",
+  "sources": [
+    "kriya-therapeutics-discovery-api-openapi.yml",
+    "kriya-therapeutics-forms-api-openapi.yml",
+    "kriya-therapeutics-media-api-openapi.yml",
+    "kriya-therapeutics-news-api-openapi.yml",
+    "kriya-therapeutics-oembed-api-openapi.yml",
+    "kriya-therapeutics-pages-api-openapi.yml",
+    "kriya-therapeutics-posts-api-openapi.yml",
+    "kriya-therapeutics-search-api-openapi.yml",
+    "kriya-therapeutics-taxonomy-api-openapi.yml",
+    "kriya-therapeutics-team-api-openapi.yml"
+  ],
+  "outputs": [
+    "kriya-therapeutics-discovery-api-openapi.yml",
+    "kriya-therapeutics-forms-api-openapi.yml",
+    "kriya-therapeutics-media-api-openapi.yml",
+    "kriya-therapeutics-news-api-openapi.yml",
+    "kriya-therapeutics-oembed-api-openapi.yml",
+    "kriya-therapeutics-pages-api-openapi.yml",
+    "kriya-therapeutics-posts-api-openapi.yml",
+    "kriya-therapeutics-search-api-openapi.yml",
+    "kriya-therapeutics-taxonomy-api-openapi.yml",
+    "kriya-therapeutics-team-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "kriya-therapeutics-discovery-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-forms-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-media-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-news-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-oembed-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-pages-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-posts-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-search-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-taxonomy-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kriya-therapeutics-team-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": []
+}
