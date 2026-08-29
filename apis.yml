@@ -18,6 +18,18 @@ description: >-
   Therapeutics runs no developer program and publishes no product API, no developer portal and no
   API documentation; the only machine-readable surface reachable without credentials is the
   WordPress REST content API behind kriyatherapeutics.com, catalogued here.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://kriyatherapeutics.com/wp-content/uploads/2023/03/Kriya-Logo-Bl.png
 url: https://raw.githubusercontent.com/api-evangelist/kriya-therapeutics/refs/heads/main/apis.yml
 x-type: company
