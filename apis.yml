@@ -41,16 +41,16 @@ created: '2026-08-04'
 modified: '2026-08-04'
 tags:
 - Company
-- Biotechnology
-- Pharmaceuticals
-- Gene Therapy
-- AAV
-- Ophthalmology
-- Metabolic Disease
-- Neurology
-- Life Sciences
-- Clinical Trials
-- Biomanufacturing
+- biotechnology
+- pharmaceuticals
+- gene-therapy
+- aav
+- ophthalmology
+- metabolic-disease
+- neurology
+- life-sciences
+- clinical-trials
+- biomanufacturing
 - content-api
 tags_raw:
 - Company

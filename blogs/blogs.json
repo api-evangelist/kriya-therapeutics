@@ -2,10 +2,6 @@
   "repo": "kriya-therapeutics",
   "feeds": [
     {
-      "source": "https://kriyatherapeutics.com/feed/",
-      "error": "HTTPError"
-    },
-    {
       "source": "https://kriyatherapeutics.com/newsroom/",
       "feed_url": "https://kriyatherapeutics.com/newsroom/",
       "title": "",
@@ -14,5 +10,5 @@
     }
   ],
   "post_count": 10,
-  "fetched": "2026-08-22T20:20:02Z"
+  "fetched": "2026-08-30T22:33:40Z"
 }
