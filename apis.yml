@@ -162,26 +162,6 @@ apis:
     url: conventions/kriya-therapeutics-conventions.yml
   - type: DataModel
     url: data-model/kriya-therapeutics-data-model.yml
-- aid: kriya-therapeutics:kriya-therapeutics-oembed-api
-  name: Kriya Therapeutics Oembed API
-  description: oEmbed 1.0 provider endpoint for kriyatherapeutics.com URLs.
-  humanURL: https://developer.wordpress.org/rest-api/
-  baseURL: https://kriyatherapeutics.com/wp-json
-  tags:
-  - oEmbed
-  tags_raw:
-  - oembed
-  properties:
-  - type: OpenAPI
-    url: openapi/kriya-therapeutics-oembed-api-openapi.yml
-  - type: Authentication
-    url: authentication/kriya-therapeutics-authentication.yml
-  - type: ErrorCatalog
-    url: errors/kriya-therapeutics-problem-types.yml
-  - type: Conventions
-    url: conventions/kriya-therapeutics-conventions.yml
-  - type: DataModel
-    url: data-model/kriya-therapeutics-data-model.yml
 - aid: kriya-therapeutics:kriya-therapeutics-pages-api
   name: Kriya Therapeutics Pages API
   description: Corporate and pipeline pages (18 published at harvest time).
@@ -276,6 +256,24 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/kriya-therapeutics-team-api-openapi.yml
+  - type: Authentication
+    url: authentication/kriya-therapeutics-authentication.yml
+  - type: ErrorCatalog
+    url: errors/kriya-therapeutics-problem-types.yml
+  - type: Conventions
+    url: conventions/kriya-therapeutics-conventions.yml
+  - type: DataModel
+    url: data-model/kriya-therapeutics-data-model.yml
+- aid: kriya-therapeutics:kriya-therapeutics-o-embed-api
+  name: Kriya Therapeutics o Embed API
+  description: oEmbed 1.0 provider endpoint for kriyatherapeutics.com URLs.
+  humanURL: https://developer.wordpress.org/rest-api/
+  baseURL: https://kriyatherapeutics.com/wp-json
+  tags:
+  - o Embed
+  properties:
+  - type: OpenAPI
+    url: openapi/kriya-therapeutics-o-embed-api-openapi.yml
   - type: Authentication
     url: authentication/kriya-therapeutics-authentication.yml
   - type: ErrorCatalog
