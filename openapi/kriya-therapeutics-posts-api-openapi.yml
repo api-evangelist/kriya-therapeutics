@@ -3,7 +3,7 @@ info:
   title: Kriya Therapeutics Content Posts API
   version: wp/v2
   summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
-  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json.
   contact:
     name: Kriya Therapeutics
     url: https://kriyatherapeutics.com/connect/
@@ -12,13 +12,13 @@ servers:
 - url: https://kriyatherapeutics.com/wp-json
   description: Production content API
 tags:
-- name: posts
+- name: Posts
   description: Core blog/post collection (33 items at harvest).
 paths:
   /wp/v2/posts:
     get:
       tags:
-      - posts
+      - Posts
       operationId: listPosts
       summary: List posts
       description: Lists published core posts (33 at harvest). Categorised with the `category` taxonomy.
@@ -113,7 +113,7 @@ paths:
   /wp/v2/posts/{id}:
     get:
       tags:
-      - posts
+      - Posts
       operationId: getPost
       summary: Get a post
       parameters:
@@ -129,7 +129,201 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    OrderBy:
+      name: orderby
+      in: query
+      description: Sort collection by object attribute.
+      schema:
+        type: string
+        examples:
+        - date
+        - id
+        - title
+        - slug
+        - modified
+        - relevance
+    Exclude:
+      name: exclude
+      in: query
+      description: Ensure result set excludes specific IDs.
+      schema:
+        type: array
+        items:
+          type: integer
+    PerPage:
+      name: per_page
+      in: query
+      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+    SearchColumns:
+      name: search_columns
+      in: query
+      description: Array of column names to be searched.
+      schema:
+        type: array
+        items:
+          type: string
+    After:
+      name: after
+      in: query
+      description: Limit response to posts published after a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    Offset:
+      name: offset
+      in: query
+      description: Offset the result set by a specific number of items.
+      schema:
+        type: integer
+    Include:
+      name: include
+      in: query
+      description: Limit result set to specific IDs.
+      schema:
+        type: array
+        items:
+          type: integer
+    Before:
+      name: before
+      in: query
+      description: Limit response to posts published before a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    Page:
+      name: page
+      in: query
+      description: Current page of the collection.
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    Search:
+      name: search
+      in: query
+      description: Limit results to those matching a string.
+      schema:
+        type: string
+    Slug:
+      name: slug
+      in: query
+      description: Limit result set to items with one or more specific slugs.
+      schema:
+        type: array
+        items:
+          type: string
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum:
+        - view
+        - embed
+        - edit
+        default: view
+    Order:
+      name: order
+      in: query
+      description: Order sort attribute ascending or descending.
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+        default: desc
+    ModifiedAfter:
+      name: modified_after
+      in: query
+      description: Limit response to posts modified after a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    ModifiedBefore:
+      name: modified_before
+      in: query
+      description: Limit response to posts modified before a given ISO8601 compliant date.
+      schema:
+        type: string
+        format: date-time
+    PathId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the object.
+      schema:
+        type: integer
+  headers:
+    XWPTotal:
+      description: Total number of items in the unpaginated collection.
+      schema:
+        type: integer
+    LinkPagination:
+      description: RFC 8288 Link header carrying rel="next" and rel="prev" pagination links.
+      schema:
+        type: string
+    XWPTotalPages:
+      description: Total number of pages available at the requested per_page.
+      schema:
+        type: integer
+  responses:
+    InvalidParam:
+      description: A query parameter failed validation. WordPress returns its own JSON envelope {code,message,data} with application/json — not RFC 9457 application/problem+json.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+          examples:
+            per_page:
+              value:
+                code: rest_invalid_param
+                message: 'Invalid parameter(s): per_page'
+                data:
+                  status: 400
+                  params:
+                    per_page: per_page must be between 1 (inclusive) and 100 (inclusive)
+    NotFound:
+      description: The object was not found. Note that on this deployment an unknown numeric id is answered by the edge with an nginx HTML 404 page rather than the WordPress rest_post_invalid_id JSON envelope — see errors/kriya-therapeutics-problem-types.yml.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WPError'
+        text/html:
+          schema:
+            type: string
   schemas:
+    Links:
+      type: object
+      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
+      additionalProperties: true
+    WPError:
+      type: object
+      description: The WordPress REST error envelope. Not RFC 9457.
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+            params:
+              type: object
+              additionalProperties:
+                type: string
+      required:
+      - code
+      - message
+      - data
     Post:
       type: object
       properties:
@@ -202,197 +396,3 @@ components:
       properties:
         rendered:
           type: string
-    WPError:
-      type: object
-      description: The WordPress REST error envelope. Not RFC 9457.
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-        data:
-          type: object
-          properties:
-            status:
-              type: integer
-            params:
-              type: object
-              additionalProperties:
-                type: string
-      required:
-      - code
-      - message
-      - data
-    Links:
-      type: object
-      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
-      additionalProperties: true
-  parameters:
-    ModifiedBefore:
-      name: modified_before
-      in: query
-      description: Limit response to posts modified before a given ISO8601 compliant date.
-      schema:
-        type: string
-        format: date-time
-    Search:
-      name: search
-      in: query
-      description: Limit results to those matching a string.
-      schema:
-        type: string
-    Include:
-      name: include
-      in: query
-      description: Limit result set to specific IDs.
-      schema:
-        type: array
-        items:
-          type: integer
-    Before:
-      name: before
-      in: query
-      description: Limit response to posts published before a given ISO8601 compliant date.
-      schema:
-        type: string
-        format: date-time
-    ModifiedAfter:
-      name: modified_after
-      in: query
-      description: Limit response to posts modified after a given ISO8601 compliant date.
-      schema:
-        type: string
-        format: date-time
-    Order:
-      name: order
-      in: query
-      description: Order sort attribute ascending or descending.
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-        default: desc
-    PathId:
-      name: id
-      in: path
-      required: true
-      description: Unique identifier for the object.
-      schema:
-        type: integer
-    Slug:
-      name: slug
-      in: query
-      description: Limit result set to items with one or more specific slugs.
-      schema:
-        type: array
-        items:
-          type: string
-    OrderBy:
-      name: orderby
-      in: query
-      description: Sort collection by object attribute.
-      schema:
-        type: string
-        examples:
-        - date
-        - id
-        - title
-        - slug
-        - modified
-        - relevance
-    Exclude:
-      name: exclude
-      in: query
-      description: Ensure result set excludes specific IDs.
-      schema:
-        type: array
-        items:
-          type: integer
-    SearchColumns:
-      name: search_columns
-      in: query
-      description: Array of column names to be searched.
-      schema:
-        type: array
-        items:
-          type: string
-    Offset:
-      name: offset
-      in: query
-      description: Offset the result set by a specific number of items.
-      schema:
-        type: integer
-    PerPage:
-      name: per_page
-      in: query
-      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
-      schema:
-        type: integer
-        default: 10
-        minimum: 1
-        maximum: 100
-    Context:
-      name: context
-      in: query
-      description: Scope under which the request is made; determines fields present in the response.
-      schema:
-        type: string
-        enum:
-        - view
-        - embed
-        - edit
-        default: view
-    Page:
-      name: page
-      in: query
-      description: Current page of the collection.
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    After:
-      name: after
-      in: query
-      description: Limit response to posts published after a given ISO8601 compliant date.
-      schema:
-        type: string
-        format: date-time
-  headers:
-    XWPTotal:
-      description: Total number of items in the unpaginated collection.
-      schema:
-        type: integer
-    LinkPagination:
-      description: RFC 8288 Link header carrying rel="next" and rel="prev" pagination links.
-      schema:
-        type: string
-    XWPTotalPages:
-      description: Total number of pages available at the requested per_page.
-      schema:
-        type: integer
-  responses:
-    NotFound:
-      description: The object was not found. Note that on this deployment an unknown numeric id is answered by the edge with an nginx HTML 404 page rather than the WordPress rest_post_invalid_id JSON envelope — see errors/kriya-therapeutics-problem-types.yml.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/WPError'
-        text/html:
-          schema:
-            type: string
-    InvalidParam:
-      description: A query parameter failed validation. WordPress returns its own JSON envelope {code,message,data} with application/json — not RFC 9457 application/problem+json.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/WPError'
-          examples:
-            per_page:
-              value:
-                code: rest_invalid_param
-                message: 'Invalid parameter(s): per_page'
-                data:
-                  status: 400
-                  params:
-                    per_page: per_page must be between 1 (inclusive) and 100 (inclusive)

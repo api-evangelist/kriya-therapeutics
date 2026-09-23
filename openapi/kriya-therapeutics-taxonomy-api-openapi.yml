@@ -3,7 +3,7 @@ info:
   title: Kriya Therapeutics Content Taxonomy API
   version: wp/v2
   summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
-  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json.
   contact:
     name: Kriya Therapeutics
     url: https://kriyatherapeutics.com/connect/
@@ -12,13 +12,13 @@ servers:
 - url: https://kriyatherapeutics.com/wp-json
   description: Production content API
 tags:
-- name: taxonomy
+- name: Taxonomy
   description: Categories, tags, news categories and team keywords.
 paths:
   /wp/v2/categories:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: listCategories
       summary: List categories
       description: Lists `category` terms (7 at harvest). Populated terms on this deployment are `leadership` (17), `bod` (10) and `sab` (6) — the taxonomy carries the leadership, board and scientific advisory board groupings used on the Team page.
@@ -54,7 +54,7 @@ paths:
   /wp/v2/categories/{id}:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: getCategory
       summary: Get a category term
       parameters:
@@ -72,7 +72,7 @@ paths:
   /wp/v2/tags:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: listTags
       summary: List tags
       description: Lists `post_tag` terms. Registered by WordPress core; this deployment returns an empty array.
@@ -94,7 +94,7 @@ paths:
   /wp/v2/newscategories:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: listNewsCategories
       summary: List news category terms
       description: Lists terms of the `newscategories` taxonomy attached to the `news` post type. Registered and reachable, but this deployment returns an empty array — news items are not categorised.
@@ -116,10 +116,10 @@ paths:
   /wp/v2/teamkeywords:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: listTeamKeywords
       summary: List team keyword terms
-      description: Lists terms of the `teamkeywords` taxonomy attached to the `team` post type. Four terms are registered — Leadership, Board of Directors, Founders, and Scientific and Strategic Advisors — each with a public archive link under /keyword/<slug>/, though all report count 0.
+      description: Lists terms of the `teamkeywords` taxonomy attached to the `team` post type. Four terms are registered — Leadership, Board of Directors, Founders, and Scientific and Strategic Advisors — each with a public archive link under /keyword//, though all report count 0.
       parameters:
       - $ref: '#/components/parameters/Context'
       - $ref: '#/components/parameters/Page'
@@ -141,7 +141,7 @@ paths:
   /wp/v2/teamkeywords/{id}:
     get:
       tags:
-      - taxonomy
+      - Taxonomy
       operationId: getTeamKeyword
       summary: Get a team keyword term
       parameters:
@@ -157,66 +157,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    Slug:
-      name: slug
-      in: query
-      description: Limit result set to items with one or more specific slugs.
-      schema:
-        type: array
-        items:
-          type: string
-    PerPage:
-      name: per_page
-      in: query
-      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
-      schema:
-        type: integer
-        default: 10
-        minimum: 1
-        maximum: 100
-    Context:
-      name: context
-      in: query
-      description: Scope under which the request is made; determines fields present in the response.
-      schema:
-        type: string
-        enum:
-        - view
-        - embed
-        - edit
-        default: view
-    Page:
-      name: page
-      in: query
-      description: Current page of the collection.
-      schema:
-        type: integer
-        default: 1
-        minimum: 1
-    Search:
-      name: search
-      in: query
-      description: Limit results to those matching a string.
-      schema:
-        type: string
-    Order:
-      name: order
-      in: query
-      description: Order sort attribute ascending or descending.
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-        default: desc
-    PathId:
-      name: id
-      in: path
-      required: true
-      description: Unique identifier for the object.
-      schema:
-        type: integer
   schemas:
     WPError:
       type: object
@@ -269,6 +209,66 @@ components:
           - array
         _links:
           $ref: '#/components/schemas/Links'
+  parameters:
+    PerPage:
+      name: per_page
+      in: query
+      description: Maximum number of items to be returned per page. Values above 100 are rejected with rest_invalid_param.
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+    Order:
+      name: order
+      in: query
+      description: Order sort attribute ascending or descending.
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+        default: desc
+    PathId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the object.
+      schema:
+        type: integer
+    Page:
+      name: page
+      in: query
+      description: Current page of the collection.
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    Search:
+      name: search
+      in: query
+      description: Limit results to those matching a string.
+      schema:
+        type: string
+    Slug:
+      name: slug
+      in: query
+      description: Limit result set to items with one or more specific slugs.
+      schema:
+        type: array
+        items:
+          type: string
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum:
+        - view
+        - embed
+        - edit
+        default: view
   headers:
     XWPTotal:
       description: Total number of items in the unpaginated collection.

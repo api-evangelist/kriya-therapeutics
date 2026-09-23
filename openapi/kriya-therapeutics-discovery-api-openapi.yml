@@ -3,7 +3,7 @@ info:
   title: Kriya Therapeutics Content Discovery API
   version: wp/v2
   summary: Anonymously readable WordPress REST content API behind kriyatherapeutics.com.
-  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json. Kriya Therapeutics is a clinical-stage biopharmaceutical company developing one-time AAV gene therapies for chronic diseases across ophthalmology, metabolic disease and neurology; it runs no developer program and markets no product API. This document is an API Evangelist derivation of the WordPress `wp/v2` route index the site publishes at /wp-json/, restricted to the operations that were verified to return data anonymously on 2026-08-04. Write operations, /wp/v2/settings, /wp/v2/users, /wp/v2/themes, /wp/v2/plugins, /wp/v2/menus, /wp/v2/block-types, and the wp-abilities/v1, gutena-forms/v1, yoast/v1, wordfence/v1, wpe/cache-plugin/v1, wpe_sign_on_plugin/v1 and wp-site-health/v1 namespaces all require authentication and are deliberately excluded — see x-api-evangelist-provenance.
+  description: The read-only content surface Kriya Therapeutics exposes at https://kriyatherapeutics.com/wp-json.
   contact:
     name: Kriya Therapeutics
     url: https://kriyatherapeutics.com/connect/
@@ -12,13 +12,13 @@ servers:
 - url: https://kriyatherapeutics.com/wp-json
   description: Production content API
 tags:
-- name: discovery
+- name: Discovery
   description: Route, type, taxonomy and status discovery documents.
 paths:
   /:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: getApiIndex
       summary: Get the REST API index
       description: Returns the site index — name, description, URL, home, GMT offset, timezone, the registered namespaces, the site logo attachment id, the authentication methods, and the full route table (227 routes on this deployment).
@@ -41,7 +41,7 @@ paths:
   /wp/v2/comments:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: listComments
       summary: List comments
       description: Lists approved comments. Reachable anonymously and returns an empty array on this deployment — the site publishes no comment surface.
@@ -62,7 +62,7 @@ paths:
   /wp/v2/types:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: listTypes
       summary: List registered post types
       description: Returns every registered post type keyed by slug, including the two custom types that carry this company's content — `news` (rest_base `news`, taxonomy `newscategories`) and `team` (rest_base `team`, taxonomy `teamkeywords`).
@@ -80,7 +80,7 @@ paths:
   /wp/v2/types/{type}:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: getType
       summary: Get a registered post type
       parameters:
@@ -103,7 +103,7 @@ paths:
   /wp/v2/taxonomies:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: listTaxonomies
       summary: List registered taxonomies
       parameters:
@@ -125,7 +125,7 @@ paths:
   /wp/v2/taxonomies/{taxonomy}:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: getTaxonomy
       summary: Get a registered taxonomy
       parameters:
@@ -148,7 +148,7 @@ paths:
   /wp/v2/statuses:
     get:
       tags:
-      - discovery
+      - Discovery
       operationId: listStatuses
       summary: List post statuses
       parameters:
@@ -172,17 +172,6 @@ components:
         default: 10
         minimum: 1
         maximum: 100
-    Context:
-      name: context
-      in: query
-      description: Scope under which the request is made; determines fields present in the response.
-      schema:
-        type: string
-        enum:
-        - view
-        - embed
-        - edit
-        default: view
     Page:
       name: page
       in: query
@@ -197,11 +186,52 @@ components:
       description: Limit results to those matching a string.
       schema:
         type: string
+    Context:
+      name: context
+      in: query
+      description: Scope under which the request is made; determines fields present in the response.
+      schema:
+        type: string
+        enum:
+        - view
+        - embed
+        - edit
+        default: view
   schemas:
-    Links:
+    ApiIndex:
       type: object
-      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
-      additionalProperties: true
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        home:
+          type: string
+          format: uri
+        gmt_offset:
+          type:
+          - number
+          - string
+        timezone_string:
+          type: string
+        site_logo:
+          type: integer
+        namespaces:
+          type: array
+          items:
+            type: string
+        authentication:
+          type:
+          - object
+          - array
+        routes:
+          type: object
+          additionalProperties: true
+        _links:
+          $ref: '#/components/schemas/Links'
     Taxonomy:
       type: object
       properties:
@@ -252,37 +282,7 @@ components:
             type: string
         _links:
           $ref: '#/components/schemas/Links'
-    ApiIndex:
+    Links:
       type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        url:
-          type: string
-          format: uri
-        home:
-          type: string
-          format: uri
-        gmt_offset:
-          type:
-          - number
-          - string
-        timezone_string:
-          type: string
-        site_logo:
-          type: integer
-        namespaces:
-          type: array
-          items:
-            type: string
-        authentication:
-          type:
-          - object
-          - array
-        routes:
-          type: object
-          additionalProperties: true
-        _links:
-          $ref: '#/components/schemas/Links'
+      description: HAL-style link relations WordPress attaches to every resource; `_embed=1` inlines them.
+      additionalProperties: true
