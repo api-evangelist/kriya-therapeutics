@@ -64,5 +64,108 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Kriya Therapeutics is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/kriya-therapeutics_stock/
+Kriya Therapeutics, Inc. is a clinical-stage biopharmaceutical company founded in 2019 that designs, develops and manufactures one-time AAV gene therapies for chronic diseases that affect large patient populations, rather than for ultra-rare indications alone. It is headquartered at 1219 Shiloh Glenn Drive in Durham, North Carolina, inside Research Triangle Park, with additional operations in Palo Alto, California, and has raised more than $900 million across Series A ($80M, 2020), Series B ($100M, 2021), Series C (over $430M including a $150M extension, 2022-2023) and Series D ($320M, September 2025). Its pipeline spans three therapeutic areas: ophthalmology (geographic atrophy, thyroid eye disease including KRIYA-586), metabolic disease (Type 1 diabetes, MASH/NASH, an investigational AAV-FGF21 program) and neurology (trigeminal neuralgia, added through the 2022 acquisition of Redpin Therapeutics). The company operates a vertically integrated engine that pairs computational product design with in-house GMP manufacturing — the same unit operations from 1L research scale through 50L, 500L and 3,000L bioreactor scale, with Akta chromatography purification, vial filling and in-house analytical characterization of critical quality attributes. It was selected for the FDA PreCheck Pilot Program in June 2026. Kriya Therapeutics runs no developer program and publishes no product API, no developer portal and no API documentation; the only machine-readable surface reachable without credentials is the WordPress REST content API behind kriyatherapeutics.com, catalogued here.
+
+**Areas:** Company · Biotechnology · Pharmaceuticals · Gene Therapy · AAV · Ophthalmology · Metabolic Disease · Neurology · Life Sciences · Clinical Trials · Biomanufacturing · content-api
+
+## Kriya Therapeutics on APIs.io
+
+Everything profiled for Kriya Therapeutics is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/kriya-therapeutics/](https://apis.io/providers/kriya-therapeutics/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [Kriya Therapeutics Website (WordPress REST)](https://apis.io/apis/kriya-therapeutics/kriyatherapeutics-com-website-wordpress-rest/) — The public WordPress REST API (wp-json) of the Kriya Therapeutics website at kriyatherapeutics.com: the route index of the site's content management system,…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### Collections (10)
+
+Postman and Open Collection request collections.
+
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-discovery-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-forms-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-media-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-news-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-oembed-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-pages-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-posts-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-search-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-taxonomy-api/)
+- [Moved to /providers/kriya-therapeutics/](https://apis.io/collections/kriya-therapeutics/open-kriya-therapeutics-team-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Kriya Therapeutics Content Overlay](https://apis.io/overlays/kriya-therapeutics/kriya-therapeutics-content-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Kriya Therapeutics Authentication](https://apis.io/security/kriya-therapeutics/kriya-therapeutics-authentication/)
+- [Kriya Therapeutics Domain Security](https://apis.io/security/kriya-therapeutics/kriya-therapeutics-domain-security/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://kriyatherapeutics.com/)
+- [Support](https://kriyatherapeutics.com/connect/)
+- [Terms of service](https://kriyatherapeutics.com/terms-of-use)
+- [Privacy policy](https://kriyatherapeutics.com/privacy-policy)
+
+## API Evangelist rating
+
+**Kin Score 17.3** — emerging · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 58.0 |
+| Contract quality | 0.0 |
+| Contract governance | 4.5 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 28.0 |
+| Access clarity | 21.1 |
+
+**Agent readiness 6.3** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 19.5** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/kriya-therapeutics/](https://apis.io/providers/kriya-therapeutics/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Kriya Therapeutics: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/kriya-therapeutics/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
